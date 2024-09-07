@@ -77,3 +77,13 @@ func main() {
 		fmt.Printf("%s\n", err)
 	}
 }
+
+// Create a init function, that create the config files, stores the working
+// directory, and other stuff, every other command needs to check if the config
+// file exists, before it works.
+// The config package will be separates, that adds and reads config, the init
+// function should probably call that package
+
+func initialise() error {
+	return nil
+}
