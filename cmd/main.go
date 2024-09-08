@@ -1,14 +1,18 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/SwayKh/linksym/pkg/linker"
 )
 
 var (
-	homeDirectory   string
-	configDirectory string
+	homeDirectory           string
+	configDirectory         string
+	currentWorkingDirectory string
 )
 
 // var (
@@ -31,50 +35,41 @@ func setupDirectories() error {
 	var err error
 	homeDirectory, err = os.UserHomeDir()
 	if err != nil {
-		return err
+		return errors.New("Couldn't get the home directory")
 	}
 
 	configDirectory, err = os.UserConfigDir()
 	if err != nil {
-		return err
+		return errors.New("Couldn't get the config directory")
+	}
+
+	currentWorkingDirectory, err = os.Getwd()
+	if err != nil {
+		return errors.New("Couldn't get the current working directory")
 	}
 
 	return nil
 }
 
 func main() {
+	// Get Home, config and current directory
 	err := setupDirectories()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	if len(os.Args) < 2 {
 		fmt.Println(usage)
 		os.Exit(1)
 	}
 
-	// flag.Parse()
-	//
-	// if *help || *h {
-	// 	fmt.Println(usage)
-	// 	os.Exit(1)
-	// }
-
-	cwd, err := os.Getwd()
-	if err != nil {
-		fmt.Printf("%s\n", err)
-	}
-
 	path := os.Args[1]
-	if _, err = os.Stat(path); os.IsNotExist(err) {
-		fmt.Println("File Doesn't exist", err)
-		os.Exit(1)
-	}
 	filename := filepath.Base(path)
+	newFilePath := currentWorkingDirectory + "/" + filename
 
-	fmt.Println(homeDirectory, configDirectory, cwd, path, filename)
-	err = os.Symlink(path, cwd+"/"+filename)
+	err = linker.Link(path, newFilePath)
 	if err != nil {
-		fmt.Printf("%s\n", err)
+		fmt.Println(err)
 	}
 }
 
