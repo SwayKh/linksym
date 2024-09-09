@@ -18,6 +18,7 @@ linksym
 test/
 bin/
 specification.txt
+.linksym.yaml
 
 # Go workspace file
 go.work
