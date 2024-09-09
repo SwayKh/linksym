@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/SwayKh/linksym/pkg/config"
 )
 
-func Link(sourcePath, linkPath string) error {
+func Link(sourcePath, linkPath, configPath string) error {
 	// Get File info, to check if it exists, and if it's a directory or not
 	fileInfo, err := os.Stat(sourcePath)
 	if err != nil {
@@ -34,6 +36,11 @@ func Link(sourcePath, linkPath string) error {
 	err = os.Symlink(linkPath, sourcePath)
 	if err != nil {
 		return fmt.Errorf("Couldn't create symlink %s\n %w", linkPath, err)
+	}
+
+	err = config.AddRecord(sourcePath, linkPath, configPath)
+	if err != nil {
+		return err
 	}
 
 	return nil

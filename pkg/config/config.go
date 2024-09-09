@@ -37,6 +37,7 @@ func setupDirectories() error {
 	if err != nil {
 		return errors.New("Couldn't get the current working directory")
 	}
+
 	return nil
 }
 
@@ -46,10 +47,10 @@ func setupDirectories() error {
 // The config package will be separates, that adds and reads config, the init
 // function should probably call that package
 
-func Initialise() error {
+func Initialise() (string, error) {
 	err := setupDirectories()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	cfg := Config{
@@ -60,14 +61,14 @@ func Initialise() error {
 	configPath := currentWorkingDirectory + "/.linksym.yaml"
 	data, err := yaml.Marshal(&cfg)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = os.WriteFile(configPath, data, 0o644)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return configPath, nil
 }
 
 func LoadConfig(configPath string) (*Config, error) {
@@ -99,4 +100,28 @@ func LoadConfig(configPath string) (*Config, error) {
 		return nil, err
 	}
 	return &config, nil
+}
+
+func AddRecord(sourcePath, destinationPath, configPath string) error {
+	cfg, err := LoadConfig(configPath)
+	if err != nil {
+		return err
+	}
+
+	record := []string{}
+	record = append(record, sourcePath, destinationPath)
+
+	cfg.Record = append(cfg.Record, record)
+
+	data, err := yaml.Marshal(&cfg)
+	if err != nil {
+		return fmt.Errorf("Error marshalling data from cofnig struct\n %w", err)
+	}
+
+	err = os.WriteFile(configPath, data, 0o644)
+	if err != nil {
+		return fmt.Errorf("Error writing record to config file\n %w", err)
+	}
+
+	return nil
 }
