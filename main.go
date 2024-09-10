@@ -3,11 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/SwayKh/linksym/cmd"
+	"github.com/SwayKh/linksym/pkg/config"
 )
 
 func main() {
+	err := config.SetupDirectories()
+	if err != nil {
+		fmt.Printf("Error getting user directories: %v\n", err)
+		os.Exit(1)
+	}
+
 	cmd.CreateFlags()
 	flag.Parse()
 
@@ -24,13 +32,18 @@ func main() {
 
 	switch subcommand {
 	case "init":
-		cmd.Init()
+		err = cmd.Init()
 	case "add":
-		cmd.Add(args[1:])
+		err = cmd.Add(args[1:])
 	case "remove":
-		cmd.Remove()
+		err = cmd.Remove()
 	default:
 		fmt.Println("Unknown subcommand")
 		cmd.Help()
+	}
+
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
 	}
 }

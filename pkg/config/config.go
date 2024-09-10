@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -24,9 +25,10 @@ var (
 	HomeDirectory           string
 	CurrentWorkingDirectory string
 	ConfigPath              string
+	ConfigName              string
 )
 
-func setupDirectories() error {
+func SetupDirectories() error {
 	var err error
 	HomeDirectory, err = os.UserHomeDir()
 	if err != nil {
@@ -38,12 +40,14 @@ func setupDirectories() error {
 		return errors.New("Couldn't get the current working directory")
 	}
 
-	ConfigPath = CurrentWorkingDirectory + "/.linksym.yaml"
+	ConfigName := ".linksym.yaml"
+
+	ConfigPath = filepath.Join(CurrentWorkingDirectory, ConfigName)
 	return nil
 }
 
 func InitialiseConfig() error {
-	err := setupDirectories()
+	err := SetupDirectories()
 	if err != nil {
 		return fmt.Errorf("Initialising Env: %w", err)
 	}
