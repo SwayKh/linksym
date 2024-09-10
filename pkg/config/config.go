@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -16,7 +15,7 @@ import (
 // The config file can be either .json .ini .toml .yaml
 // I think yaml is a good file format for this
 
-type Config struct {
+type appConfig struct {
 	InitDirectory string     `yaml:"init_directory"`
 	Record        [][]string `yaml:"record"`
 }
@@ -43,83 +42,41 @@ func setupDirectories() error {
 	return nil
 }
 
-// Create a init function, that create the config files, stores the working
-// directory, and other stuff, every other command needs to check if the config
-// file exists, before it works.
-// The config package will be separates, that adds and reads config, the init
-// function should probably call that package
-
 func InitialiseConfig() error {
 	err := setupDirectories()
 	if err != nil {
-		return err
+		return fmt.Errorf("Initialising Env: %w", err)
 	}
 
-	cfg := Config{
+	configuration := appConfig{
 		InitDirectory: CurrentWorkingDirectory,
 		Record:        [][]string{},
 	}
 
-	data, err := yaml.Marshal(&cfg)
+	data, err := yaml.Marshal(&configuration)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error marshalling Init Data from appConfig{}: %w", err)
 	}
 
 	err = os.WriteFile(ConfigPath, data, 0o644)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error writing data to config file: %w", err)
 	}
 	return nil
 }
 
-func LoadConfig(configPath string) (*Config, error) {
-	// Check if config file exists
-	if fileExists, _, err := CheckFile(configPath); err != nil {
-		return nil, err
-	} else if !fileExists {
-		return nil, errors.New("Config file doesn't exist")
-	}
-
-	file, err := os.Open(configPath)
-	if err != nil {
-		return nil, fmt.Errorf("error opening config file: %s, %w", configPath, err)
-	}
-	defer file.Close()
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-
-	config := Config{}
-
-	err = yaml.Unmarshal(data, &config)
-	if err != nil {
-		return nil, err
-	}
-	return &config, nil
-}
-
-func AddRecord(sourcePath, destinationPath, configPath string) error {
-	cfg, err := LoadConfig(configPath)
+func AddRecord(sourcePath, destinationPath string) error {
+	configuration, err := loadConfig(ConfigPath)
 	if err != nil {
 		return err
 	}
 
-	record := []string{}
-	record = append(record, sourcePath, destinationPath)
+	recordSlice := []string{}
+	recordSlice = append(recordSlice, sourcePath, destinationPath)
+	configuration.Record = append(configuration.Record, recordSlice)
 
-	cfg.Record = append(cfg.Record, record)
-
-	data, err := yaml.Marshal(&cfg)
-	if err != nil {
-		return fmt.Errorf("Error marshalling data from cofnig struct\n %w", err)
+	if err := writeConfig(configuration); err != nil {
+		return err
 	}
-
-	err = os.WriteFile(configPath, data, 0o644)
-	if err != nil {
-		return fmt.Errorf("Error writing record to config file\n %w", err)
-	}
-
 	return nil
 }
