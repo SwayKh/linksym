@@ -11,13 +11,12 @@ import (
 
 func Link(sourcePath, linkPath, configPath string) error {
 	// Get File info, to check if it exists, and if it's a directory or not
-	fileInfo, err := os.Stat(sourcePath)
+	fileExists, fileInfo, err := config.CheckFile(sourcePath)
+
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return errors.New("File path provided doesn't exist")
-		} else {
-			return err
-		}
+		return err
+	} else if !fileExists {
+		return errors.New("Config file doesn't exist")
 	}
 
 	// If path is a directory, Rename ii
