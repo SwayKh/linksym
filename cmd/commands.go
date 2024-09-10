@@ -10,15 +10,15 @@ import (
 )
 
 // Initialise and empty config with cwd as init directory
-func Init() {
+func Init() error {
 	err := config.InitialiseConfig()
 	if err != nil {
-		fmt.Printf("Error initialising config: %s\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Error initialising config: %v\n", err)
 	}
+	return nil
 }
 
-func Add(args []string) {
+func Add(args []string) error {
 	var sourcePath string
 	var destinationPath string
 
@@ -29,21 +29,37 @@ func Add(args []string) {
 	} else if len(args) == 2 {
 		sourcePath = args[0]
 		destinationPath = args[1]
-	} else {
-		fmt.Println("Invalid number of arguments")
-		os.Exit(1)
-	}
 
-	fmt.Println(sourcePath, destinationPath)
+		fileExists, fileInfo, err := config.CheckFile(destinationPath)
+
+		if err != nil {
+			return err
+		} else if fileInfo.IsDir() {
+			filename := filepath.Base(sourcePath)
+			destinationPath = filepath.Join(destinationPath, filename)
+
+			destinationPath, err = filepath.Abs(destinationPath)
+			if err != nil {
+				return fmt.Errorf("Error getting absolute path of file %s: %v\n", destinationPath, err)
+			}
+		} else if fileExists {
+			// Need to cover special case of linking a already existing config
+			return fmt.Errorf("File %s already exists", destinationPath)
+		}
+	} else {
+		return fmt.Errorf("Invalid number of arguments")
+	}
 
 	err := linker.Link(sourcePath, destinationPath)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
+	return nil
 }
 
-func Remove() {
+func Remove() error {
 	fmt.Println(config.HomeDirectory, config.ConfigPath, config.CurrentWorkingDirectory)
+	return nil
 }
 
 func Help() {
@@ -58,5 +74,5 @@ func Help() {
 	fmt.Println("\n Flags:")
 	fmt.Println("   -h, --help")
 	fmt.Println("     Print this help message")
-	os.Exit(1)
+	os.Exit(0)
 }
