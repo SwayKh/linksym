@@ -9,7 +9,7 @@ import (
 	"github.com/SwayKh/linksym/pkg/config"
 )
 
-func Link(sourcePath, linkPath, configPath string) error {
+func Link(sourcePath, linkPath string) error {
 	// Get File info, to check if it exists, and if it's a directory or not
 	fileExists, fileInfo, err := config.CheckFile(sourcePath)
 
@@ -37,7 +37,7 @@ func Link(sourcePath, linkPath, configPath string) error {
 		return fmt.Errorf("Couldn't create symlink %s\n %w", linkPath, err)
 	}
 
-	err = config.AddRecord(sourcePath, linkPath, configPath)
+	err = config.AddRecord(sourcePath, linkPath)
 	if err != nil {
 		return err
 	}
