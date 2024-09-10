@@ -22,22 +22,24 @@ type Config struct {
 }
 
 var (
-	homeDirectory           string
-	currentWorkingDirectory string
+	HomeDirectory           string
+	CurrentWorkingDirectory string
+	ConfigPath              string
 )
 
 func setupDirectories() error {
 	var err error
-	homeDirectory, err = os.UserHomeDir()
+	HomeDirectory, err = os.UserHomeDir()
 	if err != nil {
 		return errors.New("Couldn't get the home directory")
 	}
 
-	currentWorkingDirectory, err = os.Getwd()
+	CurrentWorkingDirectory, err = os.Getwd()
 	if err != nil {
 		return errors.New("Couldn't get the current working directory")
 	}
 
+	ConfigPath = CurrentWorkingDirectory + "/.linksym.yaml"
 	return nil
 }
 
@@ -47,39 +49,35 @@ func setupDirectories() error {
 // The config package will be separates, that adds and reads config, the init
 // function should probably call that package
 
-func Initialise() (string, error) {
+func InitialiseConfig() error {
 	err := setupDirectories()
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	cfg := Config{
-		InitDirectory: currentWorkingDirectory,
+		InitDirectory: CurrentWorkingDirectory,
 		Record:        [][]string{},
 	}
 
-	configPath := currentWorkingDirectory + "/.linksym.yaml"
 	data, err := yaml.Marshal(&cfg)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	err = os.WriteFile(configPath, data, 0o644)
+	err = os.WriteFile(ConfigPath, data, 0o644)
 	if err != nil {
-		return "", err
+		return err
 	}
-	return configPath, nil
+	return nil
 }
 
 func LoadConfig(configPath string) (*Config, error) {
 	// Check if config file exists
-	_, err := os.Stat(configPath)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return nil, errors.New("Config file doesn't exist")
-		} else {
-			return nil, err
-		}
+	if fileExists, _, err := CheckFile(configPath); err != nil {
+		return nil, err
+	} else if !fileExists {
+		return nil, errors.New("Config file doesn't exist")
 	}
 
 	file, err := os.Open(configPath)
