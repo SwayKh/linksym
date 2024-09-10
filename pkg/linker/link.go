@@ -9,7 +9,7 @@ import (
 	"github.com/SwayKh/linksym/pkg/config"
 )
 
-func Link(sourcePath, linkPath string) error {
+func Link(sourcePath, destinationPath string) error {
 	// Get File info, to check if it exists, and if it's a directory or not
 	fileExists, fileInfo, err := config.CheckFile(sourcePath)
 
@@ -19,25 +19,25 @@ func Link(sourcePath, linkPath string) error {
 		return errors.New("Config file doesn't exist")
 	}
 
-	// If path is a directory, Rename ii
+	// If path is a directory, Rename it
 	if fileInfo.IsDir() {
-		err = os.Rename(sourcePath, linkPath)
+		err = os.Rename(sourcePath, destinationPath)
 		if err != nil {
-			return fmt.Errorf("Couldn't rename directory %s to %s\n %w", sourcePath, linkPath, err)
+			return fmt.Errorf("Couldn't rename directory %s to %s\n %w", sourcePath, destinationPath, err)
 		}
 	} else {
 		// If Path is a file, copy it to new path, and delete original
-		err = moveFile(sourcePath, linkPath)
+		err = moveFile(sourcePath, destinationPath)
 		if err != nil {
 			return err
 		}
 	}
-	err = os.Symlink(linkPath, sourcePath)
+	err = os.Symlink(destinationPath, sourcePath)
 	if err != nil {
-		return fmt.Errorf("Couldn't create symlink %s\n %w", linkPath, err)
+		return fmt.Errorf("Couldn't create symlink %s\n %w", destinationPath, err)
 	}
 
-	err = config.AddRecord(sourcePath, linkPath)
+	err = config.AddRecord(sourcePath, destinationPath)
 	if err != nil {
 		return err
 	}
