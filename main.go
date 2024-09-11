@@ -12,7 +12,7 @@ import (
 func main() {
 	err := config.SetupDirectories()
 	if err != nil {
-		fmt.Printf("Error getting user directories: %v\n", err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
@@ -37,6 +37,8 @@ func main() {
 		err = cmd.Add(args[1:])
 	case "remove":
 		err = cmd.Remove()
+	case "source":
+		err = cmd.Source()
 	default:
 		fmt.Println("Unknown subcommand")
 		cmd.Help()
