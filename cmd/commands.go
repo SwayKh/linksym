@@ -68,22 +68,23 @@ func Add(args []string) error {
 		destinationFileExists, fileInfo, err := config.CheckFile(destinationPath)
 		if err != nil {
 			return err
-		} else if destinationFileExists && fileInfo.IsDir() {
+		}
+
+		if destinationFileExists && fileInfo.IsDir() {
 
 			filename := filepath.Base(sourcePath)
 			destinationPath = filepath.Join(destinationPath, filename)
 			isDirectory = true
 
-		} else if destinationFileExists {
-			if !sourceFileExists {
-				// Somehow need to skip the move file step of linking, and create a link
-				// of source path to destination path, since the file is already moved,
-				// the link function will move
-				toMove = false
-			} else {
-				return fmt.Errorf("File %s already exists", destinationPath)
-			}
+		} else if destinationFileExists && !sourceFileExists {
+			// Somehow need to skip the move file step of linking, and create a link
+			// of source path to destination path, since the file is already moved,
+			// the link function will move
+			toMove = false
+		} else {
+			return fmt.Errorf("File %s already exists", destinationPath)
 		}
+
 	default:
 		return fmt.Errorf("Invalid number of arguments")
 	}
