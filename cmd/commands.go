@@ -13,44 +13,82 @@ import (
 func Init() error {
 	err := config.InitialiseConfig()
 	if err != nil {
-		return fmt.Errorf("Error initialising config: %v\n", err)
+		return err
 	}
 	return nil
 }
 
 func Add(args []string) error {
-	var sourcePath string
-	var destinationPath string
+	var sourcePath, destinationPath string
+	var err error
+	var isDirectory bool
+	toMove := true
 
-	if len(args) == 1 {
-		sourcePath = args[0]
-		filename := filepath.Base(sourcePath)
-		destinationPath = filepath.Join(config.CurrentWorkingDirectory, filename)
-	} else if len(args) == 2 {
-		sourcePath = args[0]
-		destinationPath = args[1]
+	switch len(args) {
 
-		fileExists, fileInfo, err := config.CheckFile(destinationPath)
+	case 1:
+		// Set first arg source path, get absolute path, check if it exists, set the
+		// destination path as cwd+filename of source path
 
+		sourcePath, err = filepath.Abs(args[0])
+		if err != nil {
+			return fmt.Errorf("Error getting absolute path of file %s: %w", sourcePath, err)
+		}
+
+		fileExists, _, err := config.CheckFile(sourcePath)
 		if err != nil {
 			return err
-		} else if fileInfo.IsDir() {
+		} else if !fileExists {
+			return fmt.Errorf("File %s doesn't exist", sourcePath)
+		}
+
+		filename := filepath.Base(sourcePath)
+		destinationPath = filepath.Join(config.CurrentWorkingDirectory, filename)
+
+	case 2:
+		// set first and second args as source and destination path, get absolute
+		// paths, check if the paths exist, plus handle the special case of source
+		// path not existing but destination path exists, hence creating a link
+		// without the moving the files
+		sourcePath, err = filepath.Abs(args[0])
+		if err != nil {
+			return fmt.Errorf("Error getting absolute path of file %s: %w", sourcePath, err)
+		}
+
+		destinationPath, err = filepath.Abs(args[1])
+		if err != nil {
+			return fmt.Errorf("Error getting absolute path of file %s: %w", destinationPath, err)
+		}
+
+		sourceFileExists, _, err := config.CheckFile(sourcePath)
+		if err != nil {
+			return err
+		}
+
+		destinationFileExists, fileInfo, err := config.CheckFile(destinationPath)
+		if err != nil {
+			return err
+		} else if destinationFileExists && fileInfo.IsDir() {
+
 			filename := filepath.Base(sourcePath)
 			destinationPath = filepath.Join(destinationPath, filename)
+			isDirectory = true
 
-			destinationPath, err = filepath.Abs(destinationPath)
-			if err != nil {
-				return fmt.Errorf("Error getting absolute path of file %s: %v\n", destinationPath, err)
+		} else if destinationFileExists {
+			if !sourceFileExists {
+				// Somehow need to skip the move file step of linking, and create a link
+				// of source path to destination path, since the file is already moved,
+				// the link function will move
+				toMove = false
+			} else {
+				return fmt.Errorf("File %s already exists", destinationPath)
 			}
-		} else if fileExists {
-			// Need to cover special case of linking a already existing config
-			return fmt.Errorf("File %s already exists", destinationPath)
 		}
-	} else {
+	default:
 		return fmt.Errorf("Invalid number of arguments")
 	}
 
-	err := linker.Link(sourcePath, destinationPath)
+	err = linker.Link(sourcePath, destinationPath, isDirectory, toMove)
 	if err != nil {
 		return err
 	}
@@ -58,7 +96,10 @@ func Add(args []string) error {
 }
 
 func Remove() error {
-	fmt.Println(config.HomeDirectory, config.ConfigPath, config.CurrentWorkingDirectory)
+	return nil
+}
+
+func Source() error {
 	return nil
 }
 
