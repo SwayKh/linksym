@@ -1,7 +1,6 @@
 package linker
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -9,30 +8,21 @@ import (
 	"github.com/SwayKh/linksym/pkg/config"
 )
 
-func Link(sourcePath, destinationPath string) error {
-	// Get File info, to check if it exists, and if it's a directory or not
-	fileExists, fileInfo, err := config.CheckFile(sourcePath)
-
-	if err != nil {
-		return err
-	} else if !fileExists {
-		return errors.New("Config file doesn't exist")
-	}
-
+func Link(sourcePath string, destinationPath string, isDirectory bool, toMove bool) error {
 	// If path is a directory, Rename it
-	if fileInfo.IsDir() {
-		err = os.Rename(sourcePath, destinationPath)
+	if isDirectory {
+		err := os.Rename(sourcePath, destinationPath)
 		if err != nil {
 			return fmt.Errorf("Couldn't rename directory %s to %s\n %w", sourcePath, destinationPath, err)
 		}
-	} else {
+	} else if toMove {
 		// If Path is a file, copy it to new path, and delete original
-		err = moveFile(sourcePath, destinationPath)
+		err := moveFile(sourcePath, destinationPath)
 		if err != nil {
 			return err
 		}
 	}
-	err = os.Symlink(destinationPath, sourcePath)
+	err := os.Symlink(destinationPath, sourcePath)
 	if err != nil {
 		return fmt.Errorf("Couldn't create symlink %s\n %w", destinationPath, err)
 	}
@@ -41,7 +31,6 @@ func Link(sourcePath, destinationPath string) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -61,6 +50,10 @@ func moveFile(source, destination string) error {
 	_, err = io.Copy(dst, src)
 	if err != nil {
 		return fmt.Errorf("Failed to copy file %s to %s\n %w", source, destination, err)
+	}
+	err = dst.Sync()
+	if err != nil {
+		return fmt.Errorf("Failed to write file %s to disk: %w", destination, err)
 	}
 
 	err = os.Remove(source)
