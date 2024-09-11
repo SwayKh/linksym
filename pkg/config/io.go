@@ -13,7 +13,7 @@ func CheckFile(path string) (bool, os.FileInfo, error) {
 	fileInfo, err := os.Stat(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return false, nil, fmt.Errorf("File %s doesn't exist", path)
+			return false, nil, nil
 		} else {
 			return false, nil, fmt.Errorf("Error getting file info: %w", err)
 		}
