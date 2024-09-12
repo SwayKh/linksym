@@ -1,25 +1,12 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
-
-func CheckFile(path string) (bool, os.FileInfo, error) {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return false, nil, nil
-		} else {
-			return false, nil, fmt.Errorf("Error getting file info: %w", err)
-		}
-	}
-	return true, fileInfo, nil
-}
 
 func loadConfig(configPath string) (appConfig, error) {
 	// Check if config file exists
