@@ -1,11 +1,8 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -22,31 +19,6 @@ type appConfig struct {
 	Record        [][]string `yaml:"record"`
 }
 
-var (
-	HomeDirectory           string
-	CurrentWorkingDirectory string
-	ConfigPath              string
-	ConfigName              string
-)
-
-func SetupDirectories() error {
-	var err error
-	HomeDirectory, err = os.UserHomeDir()
-	if err != nil {
-		return errors.New("Couldn't get the home directory")
-	}
-
-	CurrentWorkingDirectory, err = os.Getwd()
-	if err != nil {
-		return errors.New("Couldn't get the current working directory")
-	}
-
-	ConfigName := ".linksym.yaml"
-
-	ConfigPath = filepath.Join(CurrentWorkingDirectory, ConfigName)
-	return nil
-}
-
 func InitialiseConfig() error {
 	err := SetupDirectories()
 	if err != nil {
@@ -54,7 +26,7 @@ func InitialiseConfig() error {
 	}
 
 	configuration := appConfig{
-		InitDirectory: CurrentWorkingDirectory,
+		InitDirectory: InitDirectory,
 		Record:        [][]string{},
 	}
 
@@ -84,26 +56,4 @@ func AddRecord(sourcePath, destinationPath string) error {
 		return err
 	}
 	return nil
-}
-
-func aliasPath(paths []string) []string {
-	for i, path := range paths {
-		if strings.HasPrefix(path, CurrentWorkingDirectory) {
-			paths[i] = strings.Replace(path, CurrentWorkingDirectory, "$init_directory", 1)
-		} else if strings.HasPrefix(path, HomeDirectory) {
-			paths[i] = strings.Replace(path, HomeDirectory, "~", 1)
-		}
-	}
-	return paths
-}
-
-func expandPath(paths []string) []string {
-	for i, path := range paths {
-		if strings.HasPrefix(path, "$init_directory") {
-			paths[i] = strings.Replace(path, "$init_directory", CurrentWorkingDirectory, 1)
-		} else if strings.HasPrefix(path, "~") {
-			paths[i] = strings.Replace(path, "~", HomeDirectory, 1)
-		}
-	}
-	return paths
 }
