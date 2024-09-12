@@ -46,6 +46,10 @@ func loadConfig(configPath string) (appConfig, error) {
 	if err != nil {
 		return appConfig{}, fmt.Errorf("Error loading data to appConfig{}: %w", err)
 	}
+
+	for i, record := range config.Record {
+		config.Record[i] = expandPath(record)
+	}
 	return config, nil
 }
 
