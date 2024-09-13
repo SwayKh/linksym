@@ -77,7 +77,7 @@ func Add(args []string) error {
 		}
 
 		if destinationFileExists && !sourceFileExists {
-			err := linker.Link(destinationPath, sourcePath)
+			err := linker.Link(sourcePath, destinationPath)
 			if err != nil {
 				return err
 			}
