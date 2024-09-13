@@ -22,7 +22,6 @@ func Add(args []string) error {
 	var sourcePath, destinationPath string
 	var err error
 	var isDirectory bool
-	toMove := true
 
 	switch len(args) {
 
@@ -50,6 +49,7 @@ func Add(args []string) error {
 		// paths, check if the paths exist, plus handle the special case of source
 		// path not existing but destination path exists, hence creating a link
 		// without the moving the files
+
 		sourcePath, err = filepath.Abs(args[0])
 		if err != nil {
 			return fmt.Errorf("Error getting absolute path of file %s: %w", sourcePath, err)
@@ -65,31 +65,30 @@ func Add(args []string) error {
 			return err
 		}
 
-		destinationFileExists, fileInfo, err := config.CheckFile(destinationPath)
+		destinationFileExists, DestinationFileInfo, err := config.CheckFile(destinationPath)
 		if err != nil {
 			return err
 		}
 
-		if destinationFileExists && fileInfo.IsDir() {
-
+		if destinationFileExists && DestinationFileInfo.IsDir() {
 			filename := filepath.Base(sourcePath)
 			destinationPath = filepath.Join(destinationPath, filename)
 			isDirectory = true
+		}
 
-		} else if destinationFileExists && !sourceFileExists {
-			// Somehow need to skip the move file step of linking, and create a link
-			// of source path to destination path, since the file is already moved,
-			// the link function will move
-			toMove = false
-		} else {
-			return fmt.Errorf("File %s already exists", destinationPath)
+		if destinationFileExists && !sourceFileExists {
+			err := linker.Link(destinationPath, sourcePath)
+			if err != nil {
+				return err
+			}
+			return nil
 		}
 
 	default:
 		return fmt.Errorf("Invalid number of arguments")
 	}
 
-	err = linker.Link(sourcePath, destinationPath, isDirectory, toMove)
+	err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
 	if err != nil {
 		return err
 	}
