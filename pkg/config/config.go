@@ -52,6 +52,10 @@ func AddRecord(sourcePath, destinationPath string) error {
 	recordSlice = append(recordSlice, sourcePath, destinationPath)
 	configuration.Record = append(configuration.Record, aliasPath(recordSlice))
 
+	for i, record := range configuration.Record {
+		configuration.Record[i] = aliasPath(record)
+	}
+
 	if err := writeConfig(configuration); err != nil {
 		return err
 	}
