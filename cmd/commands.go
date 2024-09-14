@@ -60,7 +60,7 @@ func Add(args []string) error {
 			return fmt.Errorf("Error getting absolute path of file %s: %w", destinationPath, err)
 		}
 
-		sourceFileExists, _, err := config.CheckFile(sourcePath)
+		sourceFileExists, sourceFileInfo, err := config.CheckFile(sourcePath)
 		if err != nil {
 			return err
 		}
@@ -74,6 +74,17 @@ func Add(args []string) error {
 			filename := filepath.Base(sourcePath)
 			destinationPath = filepath.Join(destinationPath, filename)
 			isDirectory = true
+		}
+
+		if sourceFileExists && sourceFileInfo.IsDir() && destinationFileExists {
+			filename := filepath.Base(destinationPath)
+			sourcePath = filepath.Join(sourcePath, filename)
+
+			err := linker.Link(sourcePath, destinationPath)
+			if err != nil {
+				return err
+			}
+			return nil
 		}
 
 		if destinationFileExists && !sourceFileExists {
