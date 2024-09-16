@@ -39,7 +39,7 @@ func CheckFile(path string) (bool, os.FileInfo, error) {
 		if errors.Is(err, os.ErrNotExist) {
 			return false, nil, nil
 		} else {
-			return false, nil, fmt.Errorf("Error getting file info: %w", err)
+			return false, nil, fmt.Errorf("Error getting file info: \n%w", err)
 		}
 	}
 	return true, fileInfo, nil

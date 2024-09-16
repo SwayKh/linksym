@@ -22,7 +22,7 @@ type appConfig struct {
 func InitialiseConfig() error {
 	err := SetupDirectories()
 	if err != nil {
-		return fmt.Errorf("Initialising Env: %w", err)
+		return fmt.Errorf("Initialising Env: \n%w", err)
 	}
 
 	configuration := appConfig{
@@ -32,12 +32,12 @@ func InitialiseConfig() error {
 
 	data, err := yaml.Marshal(&configuration)
 	if err != nil {
-		return fmt.Errorf("Error marshalling Init Data from appConfig{}: %w", err)
+		return fmt.Errorf("Error marshalling Init Data from appConfig{}: \n%w", err)
 	}
 
 	err = os.WriteFile(ConfigPath, data, 0o644)
 	if err != nil {
-		return fmt.Errorf("Error writing data to config file: %w", err)
+		return fmt.Errorf("Error writing data to config file: \n%w", err)
 	}
 	return nil
 }

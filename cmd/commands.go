@@ -31,7 +31,7 @@ func Add(args []string) error {
 
 		sourcePath, err = filepath.Abs(args[0])
 		if err != nil {
-			return fmt.Errorf("Error getting absolute path of file %s: %w", sourcePath, err)
+			return fmt.Errorf("Error getting absolute path of file %s: \n%w", sourcePath, err)
 		}
 
 		fileExists, _, err := config.CheckFile(sourcePath)
@@ -52,12 +52,12 @@ func Add(args []string) error {
 
 		sourcePath, err = filepath.Abs(args[0])
 		if err != nil {
-			return fmt.Errorf("Error getting absolute path of file %s: %w", sourcePath, err)
+			return fmt.Errorf("Error getting absolute path of file %s: \n%w", sourcePath, err)
 		}
 
 		destinationPath, err = filepath.Abs(args[1])
 		if err != nil {
-			return fmt.Errorf("Error getting absolute path of file %s: %w", destinationPath, err)
+			return fmt.Errorf("Error getting absolute path of file %s: \n%w", destinationPath, err)
 		}
 
 		sourceFileExists, sourceFileInfo, err := config.CheckFile(sourcePath)
