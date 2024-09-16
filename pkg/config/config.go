@@ -79,3 +79,16 @@ func AddRecord(sourcePath, destinationPath string) error {
 	}
 	return nil
 }
+
+func RemoveRecord(index int) error {
+	configuration, err := LoadConfig(ConfigPath)
+	if err != nil {
+		return err
+	}
+	configuration.Records = removeElement(configuration.Records, index)
+
+	if err := writeConfig(configuration); err != nil {
+		return err
+	}
+	return nil
+}
