@@ -45,6 +45,26 @@ func Link(sourcePath, destinationPath string) error {
 	return nil
 }
 
+func UnLink(sourcePath, destinationPath string, isDirectory bool) error {
+	err := deleteFile(sourcePath)
+	if err != nil {
+		return err
+	}
+
+	if isDirectory {
+		err := os.Rename(destinationPath, sourcePath)
+		if err != nil {
+			return fmt.Errorf("Couldn't rename directory %s to %s: \n%w", sourcePath, destinationPath, err)
+		}
+	} else {
+		err := moveFile(destinationPath, sourcePath)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func moveFile(source, destination string) error {
 	src, err := os.Open(source)
 	if err != nil {
