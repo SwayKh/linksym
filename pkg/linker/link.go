@@ -67,12 +67,20 @@ func moveFile(source, destination string) error {
 		return fmt.Errorf("Failed to write file %s to disk: \n%w", destination, err)
 	}
 
-	err = os.Remove(source)
+	err = deleteFile(source)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func deleteFile(path string) error {
+	err := os.Remove(path)
 	if err != nil {
 		if os.IsPermission(err) {
-			return fmt.Errorf("Failed to Remove file %s\n Please run with elevated privileges", source)
+			return fmt.Errorf("Failed to Remove file %s\n Please run with elevated privileges", path)
 		} else {
-			return fmt.Errorf("Failed to Remove file %s: %w", source, err)
+			return fmt.Errorf("Failed to Remove file %s: \n%w", path, err)
 		}
 	}
 	return nil
