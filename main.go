@@ -16,6 +16,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	err = config.LoadConfig()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	cmd.CreateFlags()
 	flag.Parse()
 
@@ -36,7 +42,7 @@ func main() {
 	case "add":
 		err = cmd.Add(args[1:])
 	case "remove":
-		err = cmd.Remove(args[1])
+		err = cmd.Remove(args[1:])
 	case "source":
 		err = cmd.Source()
 	default:
@@ -45,6 +51,11 @@ func main() {
 	}
 
 	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err := config.WriteConfig(); err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}

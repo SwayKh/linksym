@@ -8,40 +8,38 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func LoadConfig(configPath string) (appConfig, error) {
+func LoadConfig() error {
 	// Check if config file exists
-	if fileExists, _, err := CheckFile(configPath); err != nil {
-		return appConfig{}, fmt.Errorf("Error checking if .linksym.yaml exists: \n%w", err)
+	if fileExists, _, err := CheckFile(ConfigPath); err != nil {
+		return fmt.Errorf("Error checking if .linksym.yaml exists: \n%w", err)
 	} else if !fileExists {
-		return appConfig{}, fmt.Errorf("No .linksym.yaml file found, please run linksym init: \n%w", err)
+		return fmt.Errorf("No .linksym.yaml file found, please run linksym init: \n%w", err)
 	}
 
-	file, err := os.Open(configPath)
+	file, err := os.Open(ConfigPath)
 	if err != nil {
-		return appConfig{}, fmt.Errorf("Error opening config file: %s: \n%w", configPath, err)
+		return fmt.Errorf("Error opening config file: %s: \n%w", ConfigPath, err)
 	}
 	defer file.Close()
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return appConfig{}, fmt.Errorf("Error reading data from config file: \n%w", err)
+		return fmt.Errorf("Error reading data from config file: \n%w", err)
 	}
 
-	config := appConfig{}
-
-	err = yaml.Unmarshal(data, &config)
+	err = yaml.Unmarshal(data, &Configuration)
 	if err != nil {
-		return appConfig{}, fmt.Errorf("Error loading data to appConfig{}: \n%w", err)
+		return fmt.Errorf("Error loading data to appConfig{}: \n%w", err)
 	}
 
-	for i := range config.Records {
-		config.Records[i].Paths = expandPath(config.Records[i].Paths)
+	for i := range Configuration.Records {
+		Configuration.Records[i].Paths = expandPath(Configuration.Records[i].Paths)
 	}
-	return config, nil
+	return nil
 }
 
-func writeConfig(configuration appConfig) error {
-	data, err := yaml.Marshal(&configuration)
+func WriteConfig() error {
+	data, err := yaml.Marshal(&Configuration)
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from appConfig{}: \n%w", err)
 	}
