@@ -34,9 +34,11 @@ func Add(args []string) error {
 			return fmt.Errorf("Error getting absolute path of file %s: \n%w", sourcePath, err)
 		}
 
-		fileExists, _, err := config.CheckFile(sourcePath)
+		fileExists, fileInfo, err := config.CheckFile(sourcePath)
 		if err != nil {
 			return err
+		} else if fileInfo.IsDir() {
+			isDirectory = true
 		} else if !fileExists {
 			return fmt.Errorf("File %s doesn't exist", sourcePath)
 		}
