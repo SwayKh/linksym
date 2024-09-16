@@ -8,13 +8,6 @@ import (
 	"strings"
 )
 
-var (
-	HomeDirectory string
-	InitDirectory string
-	ConfigPath    string
-	ConfigName    string
-)
-
 func SetupDirectories() error {
 	var err error
 	HomeDirectory, err = os.UserHomeDir()

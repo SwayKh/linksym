@@ -15,6 +15,14 @@ import (
 // The config file can be either .json .ini .toml .yaml
 // I think yaml is a good file format for this
 
+var (
+	HomeDirectory string
+	InitDirectory string
+	ConfigPath    string
+	ConfigName    string
+	Configuration appConfig
+)
+
 type appConfig struct {
 	InitDirectory string   `yaml:"init_directory"`
 	Records       []record `yaml:"records"`
@@ -49,11 +57,6 @@ func InitialiseConfig() error {
 }
 
 func AddRecord(sourcePath, destinationPath string) error {
-	configuration, err := LoadConfig(ConfigPath)
-	if err != nil {
-		return err
-	}
-
 	record := record{}
 
 	recordSlice := []string{}
@@ -68,26 +71,22 @@ func AddRecord(sourcePath, destinationPath string) error {
 	record.Paths = recordSlice
 
 	// record.Paths = aliasPath(record.Paths)
-	configuration.Records = append(configuration.Records, record)
+	Configuration.Records = append(Configuration.Records, record)
 
-	for i := range configuration.Records {
-		configuration.Records[i].Paths = aliasPath(configuration.Records[i].Paths)
+	for i := range Configuration.Records {
+		Configuration.Records[i].Paths = aliasPath(Configuration.Records[i].Paths)
 	}
 
-	if err := writeConfig(configuration); err != nil {
+	if err := WriteConfig(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func RemoveRecord(index int) error {
-	configuration, err := LoadConfig(ConfigPath)
-	if err != nil {
-		return err
-	}
-	configuration.Records = removeElement(configuration.Records, index)
+	Configuration.Records = removeElement(Configuration.Records, index)
 
-	if err := writeConfig(configuration); err != nil {
+	if err := WriteConfig(); err != nil {
 		return err
 	}
 	return nil
