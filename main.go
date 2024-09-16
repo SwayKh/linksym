@@ -36,7 +36,7 @@ func main() {
 	case "add":
 		err = cmd.Add(args[1:])
 	case "remove":
-		err = cmd.Remove()
+		err = cmd.Remove(args[1])
 	case "source":
 		err = cmd.Source()
 	default:
