@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func loadConfig(configPath string) (appConfig, error) {
+func LoadConfig(configPath string) (appConfig, error) {
 	// Check if config file exists
 	if fileExists, _, err := CheckFile(configPath); err != nil {
 		return appConfig{}, fmt.Errorf("Error checking if .linksym.yaml exists: \n%w", err)
@@ -34,8 +34,8 @@ func loadConfig(configPath string) (appConfig, error) {
 		return appConfig{}, fmt.Errorf("Error loading data to appConfig{}: \n%w", err)
 	}
 
-	for i, record := range config.Record {
-		config.Record[i] = expandPath(record)
+	for i := range config.Records {
+		config.Records[i].Paths = expandPath(config.Records[i].Paths)
 	}
 	return config, nil
 }

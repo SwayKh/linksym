@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -15,8 +16,13 @@ import (
 // I think yaml is a good file format for this
 
 type appConfig struct {
-	InitDirectory string     `yaml:"init_directory"`
-	Record        [][]string `yaml:"record"`
+	InitDirectory string   `yaml:"init_directory"`
+	Records       []record `yaml:"records"`
+}
+
+type record struct {
+	Name  string   `yaml:"name"`
+	Paths []string `yaml:"paths"`
 }
 
 func InitialiseConfig() error {
@@ -27,7 +33,7 @@ func InitialiseConfig() error {
 
 	configuration := appConfig{
 		InitDirectory: InitDirectory,
-		Record:        [][]string{},
+		Records:       []record{},
 	}
 
 	data, err := yaml.Marshal(&configuration)
@@ -43,17 +49,29 @@ func InitialiseConfig() error {
 }
 
 func AddRecord(sourcePath, destinationPath string) error {
-	configuration, err := loadConfig(ConfigPath)
+	configuration, err := LoadConfig(ConfigPath)
 	if err != nil {
 		return err
 	}
 
+	record := record{}
+
 	recordSlice := []string{}
 	recordSlice = append(recordSlice, sourcePath, destinationPath)
-	configuration.Record = append(configuration.Record, aliasPath(recordSlice))
 
-	for i, record := range configuration.Record {
-		configuration.Record[i] = aliasPath(record)
+	filename := filepath.Base(destinationPath)
+	dirname := filepath.Base(filepath.Dir(destinationPath))
+
+	fileAndDirName := filepath.Join(dirname, filename)
+
+	record.Name = fileAndDirName
+	record.Paths = recordSlice
+
+	// record.Paths = aliasPath(record.Paths)
+	configuration.Records = append(configuration.Records, record)
+
+	for i := range configuration.Records {
+		configuration.Records[i].Paths = aliasPath(configuration.Records[i].Paths)
 	}
 
 	if err := writeConfig(configuration); err != nil {
