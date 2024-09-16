@@ -108,47 +108,49 @@ func Add(args []string) error {
 	return nil
 }
 
-func Remove(linkName string) error {
-	var linkPath string
-	var sourcePath, destinationPath string
-	var err error
-	var isDirectory bool
+func Remove(args []string) error {
+	switch len(args) {
+	case 1:
+		linkName := args[0]
+		var linkPath string
+		var sourcePath, destinationPath string
+		var err error
+		var isDirectory bool
 
-	configuration, err := config.LoadConfig(config.ConfigPath)
-	if err != nil {
-		return err
-	}
+		linkPath, err = filepath.Abs(linkName)
+		if err != nil {
+			return fmt.Errorf("Error getting absolute path of file %s: \n%w", linkPath, err)
+		}
 
-	linkPath, err = filepath.Abs(linkName)
-	if err != nil {
-		return fmt.Errorf("Error getting absolute path of file %s: \n%w", linkPath, err)
-	}
+		fileExists, fileInfo, err := config.CheckFile(linkPath)
+		if err != nil {
+			return err
+		} else if fileInfo.IsDir() {
+			isDirectory = true
+		} else if !fileExists {
+			return fmt.Errorf("File %s doesn't exist", linkPath)
+		}
 
-	fileExists, fileInfo, err := config.CheckFile(linkPath)
-	if err != nil {
-		return err
-	} else if fileInfo.IsDir() {
-		isDirectory = true
-	} else if !fileExists {
-		return fmt.Errorf("File %s doesn't exist", linkPath)
-	}
+		recordPathName := filepath.Join(filepath.Base(filepath.Dir(linkPath)), filepath.Base(linkPath))
 
-	recordPathName := filepath.Join(filepath.Base(filepath.Dir(linkPath)), filepath.Base(linkPath))
-
-	for i := range configuration.Records {
-		if configuration.Records[i].Name == recordPathName {
-			sourcePath = configuration.Records[i].Paths[0]
-			destinationPath = configuration.Records[i].Paths[1]
-			err = config.RemoveRecord(i)
-			if err != nil {
-				return nil
+		for i := range config.Configuration.Records {
+			if config.Configuration.Records[i].Name == recordPathName {
+				sourcePath = config.Configuration.Records[i].Paths[0]
+				destinationPath = config.Configuration.Records[i].Paths[1]
+				err = config.RemoveRecord(i)
+				if err != nil {
+					return nil
+				}
 			}
 		}
-	}
 
-	err = linker.UnLink(sourcePath, destinationPath, isDirectory)
-	if err != nil {
-		return nil
+		err = linker.UnLink(sourcePath, destinationPath, isDirectory)
+		if err != nil {
+			return nil
+		}
+
+	default:
+		return fmt.Errorf("Invalid number of arguments")
 	}
 	return nil
 }
