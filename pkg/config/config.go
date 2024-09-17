@@ -75,7 +75,6 @@ func AddRecord(sourcePath, destinationPath string) error {
 	return nil
 }
 
-func RemoveRecord(index int) error {
-	Configuration.Records = removeElement(Configuration.Records, index)
-	return nil
+func RemoveRecord(i int) {
+	Configuration.Records = append(Configuration.Records[:i], Configuration.Records[i+1:]...)
 }
