@@ -10,18 +10,7 @@ import (
 )
 
 func main() {
-	err := config.SetupDirectories()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	err = config.LoadConfig()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
+	var err error
 	cmd.CreateFlags()
 	flag.Parse()
 
@@ -34,11 +23,35 @@ func main() {
 		cmd.Help()
 	}
 
+	if args[0] == "init" {
+		err = cmd.Init()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
+	err = config.SetupDirectories()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	err = config.LoadConfig()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	subcommand := args[0]
 
+	// This mess is created since the Config needs to be loaded at startup, which
+	// check if the configuration file is present or not, which doesn't won't
+	// exist until the init function is called, so the LoadConfig function needs
+	// to be called after a "init" subcommand call
 	switch subcommand {
 	case "init":
-		err = cmd.Init()
+		break
 	case "add":
 		err = cmd.Add(args[1:])
 	case "remove":
