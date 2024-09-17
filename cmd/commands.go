@@ -37,10 +37,10 @@ func Add(args []string) error {
 		fileExists, fileInfo, err := config.CheckFile(sourcePath)
 		if err != nil {
 			return err
-		} else if fileInfo.IsDir() {
-			isDirectory = true
 		} else if !fileExists {
 			return fmt.Errorf("File %s doesn't exist", sourcePath)
+		} else if fileInfo.IsDir() {
+			isDirectory = true
 		}
 
 		filename := filepath.Base(sourcePath)
@@ -125,10 +125,10 @@ func Remove(args []string) error {
 		fileExists, fileInfo, err := config.CheckFile(linkPath)
 		if err != nil {
 			return err
-		} else if fileInfo.IsDir() {
-			isDirectory = true
 		} else if !fileExists {
 			return fmt.Errorf("File %s doesn't exist", linkPath)
+		} else if fileInfo.IsDir() {
+			isDirectory = true
 		}
 
 		recordPathName := filepath.Join(filepath.Base(filepath.Dir(linkPath)), filepath.Base(linkPath))
