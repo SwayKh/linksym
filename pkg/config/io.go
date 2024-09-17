@@ -39,6 +39,11 @@ func LoadConfig() error {
 }
 
 func WriteConfig() error {
+	// Alias path absolute paths before writing to config file
+	for i := range Configuration.Records {
+		Configuration.Records[i].Paths = aliasPath(Configuration.Records[i].Paths)
+	}
+
 	data, err := yaml.Marshal(&Configuration)
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from appConfig{}: \n%w", err)

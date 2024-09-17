@@ -70,24 +70,12 @@ func AddRecord(sourcePath, destinationPath string) error {
 	record.Name = fileAndDirName
 	record.Paths = recordSlice
 
-	// record.Paths = aliasPath(record.Paths)
 	Configuration.Records = append(Configuration.Records, record)
 
-	for i := range Configuration.Records {
-		Configuration.Records[i].Paths = aliasPath(Configuration.Records[i].Paths)
-	}
-
-	if err := WriteConfig(); err != nil {
-		return err
-	}
 	return nil
 }
 
 func RemoveRecord(index int) error {
 	Configuration.Records = removeElement(Configuration.Records, index)
-
-	if err := WriteConfig(); err != nil {
-		return err
-	}
 	return nil
 }
