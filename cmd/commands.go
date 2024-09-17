@@ -133,14 +133,15 @@ func Remove(args []string) error {
 
 		recordPathName := filepath.Join(filepath.Base(filepath.Dir(linkPath)), filepath.Base(linkPath))
 
-		for i := range config.Configuration.Records {
+		// Can't use range over Configuration.Records. since the slice gets modified
+		// during iteration with the RemoveRecord function, so iterate over the
+		// slice manually in reverse order to fix this
+		for i := len(config.Configuration.Records) - 1; i >= 0; i-- {
 			if config.Configuration.Records[i].Name == recordPathName {
 				sourcePath = config.Configuration.Records[i].Paths[0]
 				destinationPath = config.Configuration.Records[i].Paths[1]
-				err = config.RemoveRecord(i)
-				if err != nil {
-					return nil
-				}
+
+				config.RemoveRecord(i)
 			}
 		}
 

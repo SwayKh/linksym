@@ -59,7 +59,3 @@ func aliasPath(paths []string) []string {
 	}
 	return paths
 }
-
-func removeElement(slice []record, index int) []record {
-	return append(slice[:index], slice[index+1:]...)
-}
