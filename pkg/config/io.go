@@ -32,16 +32,25 @@ func LoadConfig() error {
 		return fmt.Errorf("Error loading data to appConfig{}: \n%w", err)
 	}
 
-	for i := range Configuration.Records {
-		Configuration.Records[i].Paths = expandPath(Configuration.Records[i].Paths)
+	Configuration.InitDirectory = expandPath(Configuration.InitDirectory)
+
+	for i, v := range Configuration.Records {
+		for j := range v.Paths {
+			Configuration.Records[i].Paths[j] = expandPath(Configuration.Records[i].Paths[j])
+		}
 	}
+
 	return nil
 }
 
 func WriteConfig() error {
+	Configuration.InitDirectory = aliasPath(Configuration.InitDirectory, true)
+
 	// Alias path absolute paths before writing to config file
-	for i := range Configuration.Records {
-		Configuration.Records[i].Paths = aliasPath(Configuration.Records[i].Paths)
+	for i, v := range Configuration.Records {
+		for j := range v.Paths {
+			Configuration.Records[i].Paths[j] = aliasPath(Configuration.Records[i].Paths[j], false)
+		}
 	}
 
 	data, err := yaml.Marshal(&Configuration)

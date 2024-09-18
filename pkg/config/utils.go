@@ -19,24 +19,23 @@ func CheckFile(path string) (bool, os.FileInfo, error) {
 	return true, fileInfo, nil
 }
 
-func expandPath(paths []string) []string {
-	for i, path := range paths {
-		if strings.HasPrefix(path, "$init_directory") {
-			paths[i] = strings.Replace(path, "$init_directory", InitDirectory, 1)
-		} else if strings.HasPrefix(path, "~") {
-			paths[i] = strings.Replace(path, "~", HomeDirectory, 1)
-		}
+func expandPath(path string) string {
+	if strings.HasPrefix(path, "$init_directory") {
+		path = strings.Replace(path, "$init_directory", Configuration.InitDirectory, 1)
 	}
-	return paths
+	if strings.HasPrefix(path, "~") {
+		path = strings.Replace(path, "~", HomeDirectory, 1)
+	}
+	return path
 }
 
-func aliasPath(paths []string) []string {
-	for i, path := range paths {
-		if strings.HasPrefix(path, InitDirectory) {
-			paths[i] = strings.Replace(path, InitDirectory, "$init_directory", 1)
-		} else if strings.HasPrefix(path, HomeDirectory) {
-			paths[i] = strings.Replace(path, HomeDirectory, "~", 1)
-		}
+func aliasPath(path string, skipInitDir bool) string {
+	if strings.HasPrefix(path, HomeDirectory) {
+		path = strings.Replace(path, HomeDirectory, "~", 1)
 	}
-	return paths
+	if !skipInitDir && strings.HasPrefix(path, Configuration.InitDirectory) {
+		path = strings.Replace(path, Configuration.InitDirectory, "$init_directory", 1)
+	}
+
+	return path
 }
