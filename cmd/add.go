@@ -19,12 +19,7 @@ func Add(args []string) error {
 		// Set first arg source path, get absolute path, check if it exists, set the
 		// destination path as cwd+filename of source path
 
-		sourcePath, err = filepath.Abs(args[0])
-		if err != nil {
-			return fmt.Errorf("Error getting absolute path of file %s: \n%w", sourcePath, err)
-		}
-
-		fileExists, fileInfo, err := config.CheckFile(sourcePath)
+		sourcePath, fileExists, fileInfo, err := filePathInfo(args[0])
 		if err != nil {
 			return err
 		} else if !fileExists {
@@ -36,33 +31,28 @@ func Add(args []string) error {
 		filename := filepath.Base(sourcePath)
 		destinationPath = filepath.Join(config.Configuration.InitDirectory, filename)
 
+		err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
+		if err != nil {
+			return err
+		}
+		return nil
+
 	case 2:
 		// set first and second args as source and destination path, get absolute
 		// paths, check if the paths exist, plus handle the special case of source
 		// path not existing but destination path exists, hence creating a link
 		// without the moving the files
-
-		sourcePath, err = filepath.Abs(args[0])
-		if err != nil {
-			return fmt.Errorf("Error getting absolute path of file %s: \n%w", sourcePath, err)
-		}
-
-		destinationPath, err = filepath.Abs(args[1])
-		if err != nil {
-			return fmt.Errorf("Error getting absolute path of file %s: \n%w", destinationPath, err)
-		}
-
-		sourceFileExists, sourceFileInfo, err := config.CheckFile(sourcePath)
+		destinationPath, destinationFileExists, destinationFileInfo, err := filePathInfo(args[1])
 		if err != nil {
 			return err
 		}
 
-		destinationFileExists, DestinationFileInfo, err := config.CheckFile(destinationPath)
+		sourcePath, sourceFileExists, sourceFileInfo, err := filePathInfo(args[0])
 		if err != nil {
 			return err
 		}
 
-		if sourceFileExists && sourceFileInfo.IsDir() && destinationFileExists && DestinationFileInfo.IsDir() {
+		if sourceFileExists && sourceFileInfo.IsDir() && destinationFileExists && destinationFileInfo.IsDir() {
 			filename := filepath.Base(sourcePath)
 			destinationPath = filepath.Join(destinationPath, filename)
 			isDirectory = true
