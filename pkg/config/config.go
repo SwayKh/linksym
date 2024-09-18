@@ -17,9 +17,7 @@ import (
 
 var (
 	HomeDirectory string
-	InitDirectory string
 	ConfigPath    string
-	ConfigName    string
 	Configuration appConfig
 )
 
@@ -33,11 +31,31 @@ type record struct {
 	Paths []string `yaml:"paths"`
 }
 
+func SetupDirectories() error {
+	var err error
+	HomeDirectory, err = os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("Couldn't get the home directory")
+	}
+
+	ConfigName := ".linksym.yaml"
+	ConfigPath = filepath.Join(Configuration.InitDirectory, ConfigName)
+
+	return nil
+}
+
 func InitialiseConfig() error {
 	err := SetupDirectories()
 	if err != nil {
 		return fmt.Errorf("Initialising Env: \n%w", err)
 	}
+
+	InitDirectory, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("Couldn't get the current working directory")
+	}
+
+	InitDirectory = aliasPath(InitDirectory, true)
 
 	configuration := appConfig{
 		InitDirectory: InitDirectory,

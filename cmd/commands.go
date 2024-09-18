@@ -44,7 +44,7 @@ func Add(args []string) error {
 		}
 
 		filename := filepath.Base(sourcePath)
-		destinationPath = filepath.Join(config.InitDirectory, filename)
+		destinationPath = filepath.Join(config.Configuration.InitDirectory, filename)
 
 	case 2:
 		// set first and second args as source and destination path, get absolute
