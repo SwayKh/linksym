@@ -8,21 +8,20 @@ import (
 	"github.com/SwayKh/linksym/pkg/linker"
 )
 
+// Get the "LinkName" as an argument, which should be the path relative to the
+// Init Directory, and Find the matching LinkName through the []Records in
+// .linksym.yaml, UnLink it, and Remove from the []Records.
+// Expects one argument, and throws error on multiple arguments provided
 func Remove(args []string) error {
 	switch len(args) {
 	case 1:
-		linkName := args[0]
 		var linkPath string
 		var sourcePath, destinationPath string
 		var err error
 		var isDirectory bool
 
-		linkPath, err = filepath.Abs(linkName)
-		if err != nil {
-			return fmt.Errorf("Error getting absolute path of file %s: \n%w", linkPath, err)
-		}
-
-		fileExists, fileInfo, err := config.CheckFile(linkPath)
+		// Get the absolute path of LinkName provided from the arguments
+		linkPath, fileExists, fileInfo, err := filePathInfo(args[0])
 		if err != nil {
 			return err
 		} else if !fileExists {
@@ -31,6 +30,10 @@ func Remove(args []string) error {
 			isDirectory = true
 		}
 
+		// Since the "filename" of the record can be the same with a different file,
+		// just linked in separate directories, getting the filename and the above
+		// directory name should make the name unique enough to be checked in
+		// []Records
 		recordPathName := filepath.Join(filepath.Base(filepath.Dir(linkPath)), filepath.Base(linkPath))
 
 		// Can't use range over Configuration.Records. since the slice gets modified
@@ -47,7 +50,7 @@ func Remove(args []string) error {
 
 		err = linker.UnLink(sourcePath, destinationPath, isDirectory)
 		if err != nil {
-			return nil
+			return err
 		}
 
 	default:
