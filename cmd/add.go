@@ -52,6 +52,87 @@ func Add(args []string) error {
 			return err
 		}
 
+		// For Source and Destination paths, to Exist, !Exist, be a Dir or a File
+		// respectively creates 16 different combination of booleans, out of which 8
+		// should result in an error, but still need to be handled to provide useful
+		// information/error to the user.
+
+		// This is the branching bullshit that happens with so many booleans
+		// if sourceFileExists {
+		// 	// Source is a file
+		// 	if !sourceFileInfo.IsDir() {
+		// 		if destinationFileExists {
+		// 			// Destination is a file
+		// 			if !destinationFileInfo.IsDir() {
+		// 				// Destructive action, existing Destination file will be deleted
+		// 				// Link it with a different name i.e., Destination file name
+		// 				linker.Link()
+		// 			} else if destinationFileInfo.IsDir() {
+		// 				// Can't links a file to a directory
+		// 				return err
+		// 			}
+		// 		} else if !destinationFileExists {
+		// 			if !destinationFileInfo.IsDir() {
+		// 				// Link it with a different name i.e., Destination file name
+		// 				linker.Link()
+		// 			} else if destinationFileInfo.IsDir() {
+		// 				// given destination is in form dir/filename
+		// 				linker.Link()
+		// 			}
+		// 		}
+		// 	} else if sourceFileInfo.IsDir() {
+		// 		if destinationFileExists {
+		// 			if !destinationFileInfo.IsDir() {
+		// 				// Can't link a directory to a file
+		// 				return err
+		// 			} else if destinationFileInfo.IsDir() {
+		// 				// destination = destination/sourceDir/
+		// 				linker.Link()
+		// 			}
+		// 		} else if !destinationFileExists {
+		// 			// Treat the destinationPath as a Directory
+		// 			// destination = destinationPath/sourceDir/
+		// 			linker.Link()
+		// 		}
+		// 	}
+		// } else if !sourceFileExists {
+		// 	if !sourceFileInfo.IsDir() {
+		// 		if destinationFileExists {
+		// 			if !destinationFileInfo.IsDir() {
+		// 				// Source doesn't exist, but destination exists, so create a "fake"
+		// 				// link, skips a step in the function call for Link()
+		// 				linker.Link()
+		// 			} else if destinationFileInfo.IsDir() {
+		// 				// Can't link a file to a directory
+		// 				return err
+		// 			}
+		// 		} else if !destinationFileExists {
+		// 			if !destinationFileInfo.IsDir() {
+		// 				// if Source and Destination both don't exists then...????
+		// 				return err
+		// 			} else if destinationFileInfo.IsDir() {
+		// 				// if Source and Destination both don't exists then...????
+		// 				return err
+		// 			}
+		// 		}
+		// 	} else if sourceFileInfo.IsDir() {
+		// 		if destinationFileExists {
+		// 			if !destinationFileInfo.IsDir() {
+		// 				// Can't link a directory to a file
+		// 				return err
+		// 			} else if destinationFileInfo.IsDir() {
+		// 				// Source is a directory that doesn't exists, Destination is a
+		// 				// directory that exists, Same case as both source and destination
+		// 				// paths being a file, Create an "Fake" link
+		// 				linker.Link()
+		// 			}
+		// 		} else if !destinationFileExists {
+		// 			// Treat the destinationPath as a Directory
+		// 			return err
+		// 		}
+		// 	}
+		// }
+
 		if sourceFileExists && sourceFileInfo.IsDir() && destinationFileExists && destinationFileInfo.IsDir() {
 			filename := filepath.Base(sourcePath)
 			destinationPath = filepath.Join(destinationPath, filename)
