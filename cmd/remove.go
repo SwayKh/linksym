@@ -18,18 +18,14 @@ func Remove(args []string) error {
 		var linkPath string
 		var sourcePath, destinationPath string
 		var err error
-		var isDirectory bool
 
 		// Get the absolute path of LinkName provided from the arguments
-		linkPath, fileExists, fileInfo, err := filePathInfo(args[0])
+		linkPath, fileExists, fileInfo, _, err := filePathInfo(args[0])
 		if err != nil {
 			return err
 		} else if !fileExists {
 			return fmt.Errorf("File %s doesn't exist", linkPath)
-		} else if fileInfo.IsDir() {
-			isDirectory = true
 		}
-
 		// Since the "filename" of the record can be the same with a different file,
 		// just linked in separate directories, getting the filename and the above
 		// directory name should make the name unique enough to be checked in
@@ -48,7 +44,7 @@ func Remove(args []string) error {
 			}
 		}
 
-		err = linker.UnLink(sourcePath, destinationPath, isDirectory)
+		err = linker.UnLink(sourcePath, destinationPath, fileInfo.IsDir())
 		if err != nil {
 			return err
 		}
