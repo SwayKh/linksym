@@ -33,11 +33,7 @@ func Add(args []string) error {
 		filename := filepath.Base(sourcePath)
 		destinationPath = filepath.Join(config.Configuration.InitDirectory, filename)
 
-		err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
-		if err != nil {
-			return err
-		}
-		return nil
+		return linker.MoveAndLink(sourcePath, destinationPath, fileInfo.IsDir())
 
 	case 2:
 		// set first and second args as source and destination path, get absolute
@@ -66,11 +62,7 @@ func Add(args []string) error {
 			destinationPath = filepath.Join(destinationPath, filename)
 			isDirectory = false
 
-			err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
-			if err != nil {
-				return err
-			}
-			return nil
+			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 
 		// If the Destination path doesn't exist, It can't not be a directory or be
 		// a file, check for a trailing / in the destination path to determine
@@ -83,11 +75,7 @@ func Add(args []string) error {
 			}
 			isDirectory = false
 
-			err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
-			if err != nil {
-				return err
-			}
-			return nil
+			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 
 			// Put the Source Directory Path inside Destination Directory
 		case sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
@@ -95,11 +83,7 @@ func Add(args []string) error {
 			destinationPath = filepath.Join(destinationPath, filename)
 			isDirectory = true
 
-			err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
-			if err != nil {
-				return err
-			}
-			return nil
+			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 
 		case sourceFileExists && !destinationFileExists && sourceFileInfo.IsDir():
 			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
@@ -108,11 +92,7 @@ func Add(args []string) error {
 			}
 			isDirectory = true
 
-			err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
-			if err != nil {
-				return err
-			}
-			return nil
+			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 
 		case !sourceFileExists && destinationFileExists && !destinationFileInfo.IsDir():
 			if strings.HasPrefix(sourcePath, string(os.PathSeparator)) {
@@ -120,19 +100,11 @@ func Add(args []string) error {
 				filename := filepath.Base(sourcePath)
 				destinationPath = filepath.Join(destinationPath, filename)
 
-				err = linker.Link(sourcePath, destinationPath)
-				if err != nil {
-					return err
-				}
-				return nil
+				return linker.Link(sourcePath, destinationPath)
 
 			} else {
 				// Else it's a file, which should be linked the destinationPath
-				err = linker.Link(sourcePath, destinationPath)
-				if err != nil {
-					return err
-				}
-				return nil
+				return linker.Link(sourcePath, destinationPath)
 			}
 
 		// If the destination file already exists, Then the MoveAndLink() will fail
@@ -161,9 +133,5 @@ func Add(args []string) error {
 		return fmt.Errorf("Invalid number of arguments")
 	}
 
-	err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
-	if err != nil {
-		return err
-	}
 	return nil
 }
