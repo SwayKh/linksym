@@ -11,9 +11,9 @@ import (
 func LoadConfig() error {
 	// Check if config file exists
 	if fileExists, _, err := CheckFile(ConfigPath); err != nil {
-		return fmt.Errorf("Error checking if .linksym.yaml exists: \n%w", err)
+		return fmt.Errorf("Error checking if .linksym.yaml exists: \n %w", err)
 	} else if !fileExists {
-		return fmt.Errorf("No .linksym.yaml file found, please run linksym init: \n%w", err)
+		return fmt.Errorf("No .linksym.yaml file found, please run linksym init: \n %w", err)
 	}
 
 	file, err := os.Open(ConfigPath)
@@ -61,6 +61,36 @@ func WriteConfig() error {
 	err = os.WriteFile(ConfigPath, data, 0o644)
 	if err != nil {
 		return fmt.Errorf("Error writing record to config file: \n%w", err)
+	}
+	return nil
+}
+
+func InitialiseConfig() error {
+	err := SetupDirectories()
+	if err != nil {
+		return fmt.Errorf("Initialising Env: \n%w", err)
+	}
+
+	InitDirectory, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("Couldn't get the current working directory")
+	}
+
+	InitDirectory = aliasPath(InitDirectory, true)
+
+	configuration := appConfig{
+		InitDirectory: InitDirectory,
+		Records:       []record{},
+	}
+
+	data, err := yaml.Marshal(&configuration)
+	if err != nil {
+		return fmt.Errorf("Error marshalling Init Data from appConfig{}: \n%w", err)
+	}
+
+	err = os.WriteFile(ConfigPath, data, 0o644)
+	if err != nil {
+		return fmt.Errorf("Error writing data to config file: \n%w", err)
 	}
 	return nil
 }

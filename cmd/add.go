@@ -102,7 +102,6 @@ func Add(args []string) error {
 				return linker.Link(sourcePath, destinationPath)
 			}
 			// Else Source is a file, and destination is a directory
-			fmt.Println("This case is triggered")
 			return fmt.Errorf("Can't Link a file %s to a directory %s", sourcePath, destinationPath)
 
 		// Source and Destination Both Don't Exist

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 )
 
 func Help() {
@@ -17,5 +16,4 @@ func Help() {
 	fmt.Println("\n Flags:")
 	fmt.Println("   -h, --help")
 	fmt.Println("     Print this help message")
-	os.Exit(0)
 }
