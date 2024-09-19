@@ -58,9 +58,8 @@ func Add(args []string) error {
 		switch {
 		// Destination is a directory so create symlink to destinationPath/SourceFileName
 		case sourceFileExists && destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			filename := filepath.Base(sourcePath)
-			destinationPath = filepath.Join(destinationPath, filename)
 			isDirectory = false
+			destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 
 			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 
@@ -70,8 +69,7 @@ func Add(args []string) error {
 		// Handles both case for !destinationFileExists and be a dir or file
 		case sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir():
 			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
-				filename := filepath.Base(sourcePath)
-				destinationPath = filepath.Join(destinationPath, filename)
+				destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 			}
 			isDirectory = false
 
@@ -79,16 +77,14 @@ func Add(args []string) error {
 
 			// Put the Source Directory Path inside Destination Directory
 		case sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			filename := filepath.Base(sourcePath)
-			destinationPath = filepath.Join(destinationPath, filename)
 			isDirectory = true
+			destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 
 			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 
 		case sourceFileExists && !destinationFileExists && sourceFileInfo.IsDir():
 			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
-				filename := filepath.Base(sourcePath)
-				destinationPath = filepath.Join(destinationPath, filename)
+				destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 			}
 			isDirectory = true
 
@@ -97,8 +93,7 @@ func Add(args []string) error {
 		case !sourceFileExists && destinationFileExists && !destinationFileInfo.IsDir():
 			if strings.HasPrefix(sourcePath, string(os.PathSeparator)) {
 				// Given Source path has a trailing /, hence it's a directory
-				filename := filepath.Base(sourcePath)
-				destinationPath = filepath.Join(destinationPath, filename)
+				destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 
 				return linker.Link(sourcePath, destinationPath)
 
@@ -132,6 +127,13 @@ func Add(args []string) error {
 	default:
 		return fmt.Errorf("Invalid number of arguments")
 	}
-
 	return nil
+}
+
+// Append filename from Source path to Destination path
+func appendToDestinationPath(sourcePath, destinationPath string) string {
+	filename := filepath.Base(sourcePath)
+	destinationPath = filepath.Join(destinationPath, filename)
+
+	return destinationPath
 }
