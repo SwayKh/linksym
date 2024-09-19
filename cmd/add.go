@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/SwayKh/linksym/pkg/config"
 	"github.com/SwayKh/linksym/pkg/linker"
@@ -16,7 +14,7 @@ func Add(args []string) error {
 	case 1:
 		// Set first arg source path, get absolute path, check if it exists, set the
 		// destination path as cwd+filename of source path
-		sourcePath, fileExists, fileInfo, err := filePathInfo(args[0])
+		sourcePath, fileExists, fileInfo, _, err := filePathInfo(args[0])
 		if err != nil {
 			return err
 		} else if !fileExists {
@@ -33,12 +31,12 @@ func Add(args []string) error {
 		// paths, check if the paths exist, plus handle the special case of source
 		// path not existing but destination path exists, hence creating a link
 		// without the moving the files
-		destinationPath, destinationFileExists, destinationFileInfo, err := filePathInfo(args[1])
+		destinationPath, destinationFileExists, destinationFileInfo, destinationHasSlash, err := filePathInfo(args[1])
 		if err != nil {
 			return err
 		}
 
-		sourcePath, sourceFileExists, sourceFileInfo, err := filePathInfo(args[0])
+		sourcePath, sourceFileExists, sourceFileInfo, sourceHasSlash, err := filePathInfo(args[0])
 		if err != nil {
 			return err
 		}
@@ -62,7 +60,7 @@ func Add(args []string) error {
 		// Link Source file to Destination by using path as File or Directory based
 		// on trailling / provided with argument
 		case isSourceFile && !destinationFileExists:
-			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
+			if destinationHasSlash {
 				destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 			}
 			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
@@ -80,7 +78,7 @@ func Add(args []string) error {
 		// based on trailling / provided with argument. But can't link a Directory
 		// to a File
 		case isSourceDir && !destinationFileExists:
-			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
+			if destinationHasSlash {
 				destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 				return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 			} else {
@@ -89,7 +87,7 @@ func Add(args []string) error {
 
 		// Source Doesn't exists(Can be file or dir), But Destination does, and is a file
 		case !sourceFileExists && isDestinationFile:
-			if strings.HasPrefix(sourcePath, string(os.PathSeparator)) {
+			if sourceHasSlash {
 				// Given Source path has a trailing /, hence it's a directory
 				return fmt.Errorf("Can't Link a Directory %s to a File %s", sourcePath, destinationPath)
 			} else {
@@ -99,13 +97,13 @@ func Add(args []string) error {
 
 		// Source Doesn't exists(Can be file or dir), But Destination does, and is a directory
 		case !sourceFileExists && isDestinationDir:
-			if strings.HasPrefix(sourcePath, string(os.PathSeparator)) {
+			if sourceHasSlash {
 				// Given Source path has a trailing /, hence it's a directory
 				return linker.Link(sourcePath, destinationPath)
-			} else {
-				// Else Source is a file, and destination is a directory
-				return fmt.Errorf("Can't Link a file %s to a directory %s", sourcePath, destinationPath)
 			}
+			// Else Source is a file, and destination is a directory
+			fmt.Println("This case is triggered")
+			return fmt.Errorf("Can't Link a file %s to a directory %s", sourcePath, destinationPath)
 
 		// Source and Destination Both Don't Exist
 		case !sourceFileExists && !destinationFileExists:
