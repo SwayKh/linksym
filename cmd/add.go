@@ -11,10 +11,6 @@ import (
 )
 
 func Add(args []string) error {
-	var sourcePath, destinationPath string
-	var err error
-	var isDirectory bool
-
 	switch len(args) {
 
 	case 1:
@@ -26,12 +22,10 @@ func Add(args []string) error {
 			return err
 		} else if !fileExists {
 			return fmt.Errorf("File %s doesn't exist", sourcePath)
-		} else if fileInfo.IsDir() {
-			isDirectory = true
 		}
 
 		filename := filepath.Base(sourcePath)
-		destinationPath = filepath.Join(config.Configuration.InitDirectory, filename)
+		destinationPath := filepath.Join(config.Configuration.InitDirectory, filename)
 
 		return linker.MoveAndLink(sourcePath, destinationPath, fileInfo.IsDir())
 
@@ -50,15 +44,17 @@ func Add(args []string) error {
 			return err
 		}
 
+		isSourceDir := sourceFileExists && sourceFileInfo.IsDir()
+		isSourceFile := sourceFileExists && !sourceFileInfo.IsDir()
+		isDestinationDir := destinationFileExists && destinationFileInfo.IsDir()
+		isDestinationFile := destinationFileExists && !destinationFileInfo.IsDir()
+
 		// For Source and Destination paths, to Exist, !Exist, be a Dir or a File
-		// respectively creates 16 different combination of booleans, out of which 8
-		// should result in an error, but still need to be handled to provide useful
-		// information/error to the user.
+		// respectively creates 16 different combination of booleans,
 
 		switch {
 		// Destination is a directory so create symlink to destinationPath/SourceFileName
 		case sourceFileExists && destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			isDirectory = false
 			destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 
 			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
@@ -71,13 +67,11 @@ func Add(args []string) error {
 			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
 				destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 			}
-			isDirectory = false
 
 			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 
 			// Put the Source Directory Path inside Destination Directory
 		case sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			isDirectory = true
 			destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 
 			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
@@ -86,7 +80,6 @@ func Add(args []string) error {
 			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
 				destinationPath = appendToDestinationPath(sourcePath, destinationPath)
 			}
-			isDirectory = true
 
 			return linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 
@@ -107,17 +100,13 @@ func Add(args []string) error {
 			return fmt.Errorf("Destination path %s already exists", destinationPath)
 
 		case sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
-			return fmt.Errorf("Can't link directory: %s to a file: %s", sourcePath, destinationPath)
 		case !sourceFileExists && destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			return fmt.Errorf("Can't link File: %s to a Directory: %s", sourcePath, destinationPath)
 		case !sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
 		case !sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			return fmt.Errorf("Source and destinationPath path doesn't exist, Nothing to Link")
 		case !sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
-			return fmt.Errorf("Can't link Directory: %s to a File: %s", sourcePath, destinationPath)
 		case !sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
 		case !sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			return fmt.Errorf("Source and destinationPath path doesn't exist, Nothing to Link")
+			return fmt.Errorf("Unable to link %s to %s. \nEither the Source or Destination path don't exist, \nor There is a mismatch of types, eg - Directory to a file", sourcePath, destinationPath)
 
 		default:
 			return fmt.Errorf("Invalid arguments")
