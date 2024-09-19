@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/SwayKh/linksym/pkg/config"
 	"github.com/SwayKh/linksym/pkg/linker"
@@ -57,85 +59,8 @@ func Add(args []string) error {
 		// should result in an error, but still need to be handled to provide useful
 		// information/error to the user.
 
-		// This is the branching bullshit that happens with so many booleans
-		// if sourceFileExists {
-		// 	// Source is a file
-		// 	if !sourceFileInfo.IsDir() {
-		// 		if destinationFileExists {
-		// 			// Destination is a file
-		// 			if !destinationFileInfo.IsDir() {
-		// 				// Destructive action, existing Destination file will be deleted
-		// 				// Link it with a different name i.e., Destination file name
-		// 				linker.Link()
-		// 			} else if destinationFileInfo.IsDir() {
-		// 				// Can't links a file to a directory
-		// 				return err
-		// 			}
-		// 		} else if !destinationFileExists {
-		// 			if !destinationFileInfo.IsDir() {
-		// 				// Link it with a different name i.e., Destination file name
-		// 				linker.Link()
-		// 			} else if destinationFileInfo.IsDir() {
-		// 				// given destination is in form dir/filename
-		// 				linker.Link()
-		// 			}
-		// 		}
-		// 	} else if sourceFileInfo.IsDir() {
-		// 		if destinationFileExists {
-		// 			if !destinationFileInfo.IsDir() {
-		// 				// Can't link a directory to a file
-		// 				return err
-		// 			} else if destinationFileInfo.IsDir() {
-		// 				// destination = destination/sourceDir/
-		// 				linker.Link()
-		// 			}
-		// 		} else if !destinationFileExists {
-		// 			// Treat the destinationPath as a Directory
-		// 			// destination = destinationPath/sourceDir/
-		// 			linker.Link()
-		// 		}
-		// 	}
-		// } else if !sourceFileExists {
-		// 	if !sourceFileInfo.IsDir() {
-		// 		if destinationFileExists {
-		// 			if !destinationFileInfo.IsDir() {
-		// 				// Source doesn't exist, but destination exists, so create a "fake"
-		// 				// link, skips a step in the function call for Link()
-		// 				linker.Link()
-		// 			} else if destinationFileInfo.IsDir() {
-		// 				// Can't link a file to a directory
-		// 				return err
-		// 			}
-		// 		} else if !destinationFileExists {
-		// 			if !destinationFileInfo.IsDir() {
-		// 				// if Source and Destination both don't exists then...????
-		// 				return err
-		// 			} else if destinationFileInfo.IsDir() {
-		// 				// if Source and Destination both don't exists then...????
-		// 				return err
-		// 			}
-		// 		}
-		// 	} else if sourceFileInfo.IsDir() {
-		// 		if destinationFileExists {
-		// 			if !destinationFileInfo.IsDir() {
-		// 				// Can't link a directory to a file
-		// 				return err
-		// 			} else if destinationFileInfo.IsDir() {
-		// 				// Source is a directory that doesn't exists, Destination is a
-		// 				// directory that exists, Same case as both source and destination
-		// 				// paths being a file, Create an "Fake" link
-		// 				linker.Link()
-		// 			}
-		// 		} else if !destinationFileExists {
-		// 			// Treat the destinationPath as a Directory
-		// 			return err
-		// 		}
-		// 	}
-		// }
 		switch {
-		case sourceFileExists && destinationFileExists && !sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
-			return fmt.Errorf("Destination path %s already exists", destinationPath)
-
+		// Destination is a directory so create symlink to destinationPath/SourceFileName
 		case sourceFileExists && destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
 			filename := filepath.Base(sourcePath)
 			destinationPath = filepath.Join(destinationPath, filename)
@@ -148,11 +73,14 @@ func Add(args []string) error {
 			return nil
 
 		// If the Destination path doesn't exist, It can't not be a directory or be
-		// a file, Can't check for a trailing / in the destination path since that
-		// might be removed by the shell
-		case sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
-			filename := filepath.Base(sourcePath)
-			destinationPath = filepath.Join(destinationPath, filename)
+		// a file, check for a trailing / in the destination path to determine
+		// whether to use destinationPath as a directory or as a file
+		// Handles both case for !destinationFileExists and be a dir or file
+		case sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir():
+			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
+				filename := filepath.Base(sourcePath)
+				destinationPath = filepath.Join(destinationPath, filename)
+			}
 			isDirectory = false
 
 			err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
@@ -161,21 +89,7 @@ func Add(args []string) error {
 			}
 			return nil
 
-		// Need to handle these !destinationFileExists cases better
-		case sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			filename := filepath.Base(sourcePath)
-			destinationPath = filepath.Join(destinationPath, filename)
-			isDirectory = false
-
-			err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
-			if err != nil {
-				return err
-			}
-			return nil
-
-		case sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
-			return fmt.Errorf("Can't link  directory: %s to a file: %s", sourcePath, destinationPath)
-
+			// Put the Source Directory Path inside Destination Directory
 		case sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
 			filename := filepath.Base(sourcePath)
 			destinationPath = filepath.Join(destinationPath, filename)
@@ -187,9 +101,11 @@ func Add(args []string) error {
 			}
 			return nil
 
-		case sourceFileExists && !destinationFileExists && sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			filename := filepath.Base(sourcePath)
-			destinationPath = filepath.Join(destinationPath, filename)
+		case sourceFileExists && !destinationFileExists && sourceFileInfo.IsDir():
+			if strings.HasPrefix(destinationPath, string(os.PathSeparator)) {
+				filename := filepath.Base(sourcePath)
+				destinationPath = filepath.Join(destinationPath, filename)
+			}
 			isDirectory = true
 
 			err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
@@ -198,44 +114,40 @@ func Add(args []string) error {
 			}
 			return nil
 
-		case sourceFileExists && !destinationFileExists && sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
-			filename := filepath.Base(sourcePath)
-			destinationPath = filepath.Join(destinationPath, filename)
-			isDirectory = true
+		case !sourceFileExists && destinationFileExists && !destinationFileInfo.IsDir():
+			if strings.HasPrefix(sourcePath, string(os.PathSeparator)) {
+				// Given Source path has a trailing /, hence it's a directory
+				filename := filepath.Base(sourcePath)
+				destinationPath = filepath.Join(destinationPath, filename)
 
-			err = linker.MoveAndLink(sourcePath, destinationPath, isDirectory)
-			if err != nil {
-				return err
+				err = linker.Link(sourcePath, destinationPath)
+				if err != nil {
+					return err
+				}
+				return nil
+
+			} else {
+				// Else it's a file, which should be linked the destinationPath
+				err = linker.Link(sourcePath, destinationPath)
+				if err != nil {
+					return err
+				}
+				return nil
 			}
-			return nil
 
-		case !sourceFileExists && destinationFileExists && !sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
-			err = linker.Link(sourcePath, destinationPath)
-			if err != nil {
-				return err
-			}
-			return nil
+		// If the destination file already exists, Then the MoveAndLink() will fail
+		case sourceFileExists && destinationFileExists && !sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
+			return fmt.Errorf("Destination path %s already exists", destinationPath)
 
+		case sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
+			return fmt.Errorf("Can't link directory: %s to a file: %s", sourcePath, destinationPath)
 		case !sourceFileExists && destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			return fmt.Errorf("Can't link Source File: %s to a Directory: %s", sourcePath, destinationPath)
-
+			return fmt.Errorf("Can't link File: %s to a Directory: %s", sourcePath, destinationPath)
 		case !sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
 		case !sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
 			return fmt.Errorf("Source and destinationPath path doesn't exist, Nothing to Link")
-
 		case !sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
-			return fmt.Errorf("Can't link Source Directory: %s to a File: %s", sourcePath, destinationPath)
-
-		case !sourceFileExists && destinationFileExists && sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
-			filename := filepath.Base(sourcePath)
-			destinationPath = filepath.Join(destinationPath, filename)
-
-			err = linker.Link(sourcePath, destinationPath)
-			if err != nil {
-				return err
-			}
-			return nil
-
+			return fmt.Errorf("Can't link Directory: %s to a File: %s", sourcePath, destinationPath)
 		case !sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && !destinationFileInfo.IsDir():
 		case !sourceFileExists && !destinationFileExists && !sourceFileInfo.IsDir() && destinationFileInfo.IsDir():
 			return fmt.Errorf("Source and destinationPath path doesn't exist, Nothing to Link")
