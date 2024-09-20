@@ -14,7 +14,7 @@ func Run() error {
 	CreateFlags()
 	flag.Parse()
 
-	// Since the Init Command creates the config file the LoadConfig function
+	// Since the Init Command creates the config file, the LoadConfig function
 	// can't be called before handling the init subcommand.
 	if flag.Arg(0) == "init" {
 		return Init()

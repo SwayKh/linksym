@@ -15,22 +15,21 @@ import (
 func Remove(args []string) error {
 	switch len(args) {
 	case 1:
-		var linkPath string
 		var sourcePath, destinationPath string
 		var err error
 
-		// Get the absolute path of LinkName provided from the arguments
-		linkPath, fileExists, fileInfo, _, err := filePathInfo(args[0])
+		// Get the File Info of LinkName provided from the arguments
+		linkPath, err := filePathInfo(args[0])
 		if err != nil {
 			return err
-		} else if !fileExists {
-			return fmt.Errorf("File %s doesn't exist", linkPath)
+		} else if !linkPath.Exists {
+			return fmt.Errorf("File %s doesn't exist", linkPath.AbsPath)
 		}
 		// Since the "filename" of the record can be the same with a different file,
 		// just linked in separate directories, getting the filename and the above
 		// directory name should make the name unique enough to be checked in
 		// []Records
-		recordPathName := filepath.Join(filepath.Base(filepath.Dir(linkPath)), filepath.Base(linkPath))
+		recordPathName := filepath.Join(filepath.Base(filepath.Dir(linkPath.AbsPath)), filepath.Base(linkPath.AbsPath))
 
 		// Can't use range over Configuration.Records. since the slice gets modified
 		// during iteration with the RemoveRecord function, so iterate over the
@@ -44,7 +43,7 @@ func Remove(args []string) error {
 			}
 		}
 
-		err = linker.UnLink(sourcePath, destinationPath, fileInfo.IsDir())
+		err = linker.UnLink(sourcePath, destinationPath, linkPath.IsDir)
 		if err != nil {
 			return err
 		}
