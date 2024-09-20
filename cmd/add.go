@@ -131,7 +131,7 @@ func Add(configuration *config.AppConfig, args []string) error {
 		if err != nil {
 			return err
 		}
-		configuration.AddRecord(source.AbsPath, destination.AbsPath)
+		configuration.AddRecord(sourcePath, destinationPath)
 
 	default:
 		return fmt.Errorf("Invalid number of arguments")
