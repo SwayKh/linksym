@@ -12,7 +12,7 @@ import (
 // Init Directory, and Find the matching LinkName through the []Records in
 // .linksym.yaml, UnLink it, and Remove from the []Records.
 // Expects one argument, and throws error on multiple arguments provided
-func Remove(args []string) error {
+func Remove(configuration *config.AppConfig, args []string) error {
 	switch len(args) {
 	case 1:
 		var sourcePath, destinationPath string
@@ -34,12 +34,10 @@ func Remove(args []string) error {
 		// Can't use range over Configuration.Records. since the slice gets modified
 		// during iteration with the RemoveRecord function, so iterate over the
 		// slice manually in reverse order to fix this
-		for i := len(config.Configuration.Records) - 1; i >= 0; i-- {
-			if config.Configuration.Records[i].Name == recordPathName {
-				sourcePath = config.Configuration.Records[i].Paths[0]
-				destinationPath = config.Configuration.Records[i].Paths[1]
-
-				config.RemoveRecord(i)
+		for i := len(configuration.Records) - 1; i >= 0; i-- {
+			if configuration.Records[i].Name == recordPathName {
+				sourcePath = configuration.Records[i].Paths[0]
+				destinationPath = configuration.Records[i].Paths[1]
 			}
 		}
 
@@ -47,6 +45,8 @@ func Remove(args []string) error {
 		if err != nil {
 			return err
 		}
+
+		configuration.RemoveRecord(recordPathName)
 
 	default:
 		return fmt.Errorf("Invalid number of arguments")
