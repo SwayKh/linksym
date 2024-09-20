@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-
-	"github.com/SwayKh/linksym/pkg/config"
 )
 
 // Move the source file to destination and creates a symlink at the source
@@ -37,11 +35,6 @@ func Link(sourcePath, destinationPath string) error {
 	err := os.Symlink(destinationPath, sourcePath)
 	if err != nil {
 		return fmt.Errorf("Couldn't create symlink %s: %w", destinationPath, err)
-	}
-
-	err = config.AddRecord(sourcePath, destinationPath)
-	if err != nil {
-		return err
 	}
 	return nil
 }
