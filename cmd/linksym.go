@@ -21,7 +21,7 @@ func Run() error {
 		return Init()
 	}
 
-	err = config.SetupDirectories()
+	err := config.GetHomePath()
 	if err != nil {
 		return err
 	}
@@ -30,6 +30,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
+	config.SetupDirectories(configuration, configName)
 
 	if *HelpFlag {
 		Help()

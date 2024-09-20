@@ -42,3 +42,12 @@ func aliasPath(path string, skipInitDir bool) string {
 
 	return path
 }
+
+func GetHomePath() error {
+	var err error
+	HomeDirectory, err = os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("Couldn't get the home directory")
+	}
+	return nil
+}
