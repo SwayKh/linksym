@@ -20,7 +20,6 @@ func Run() error {
 		return err
 	}
 
-	err = config.LoadConfig()
 	// Since the Init Command creates the config file, the LoadConfig function
 	// can't be called before handling the init subcommand.
 	// But Init function calls aliasPath, which requires HomeDirectory variable,
@@ -29,6 +28,7 @@ func Run() error {
 		return Init(configName)
 	}
 
+	configuration, err := config.LoadConfig(configName)
 	if err != nil {
 		return err
 	}
@@ -45,16 +45,16 @@ func Run() error {
 	case "init":
 		break
 	case "add":
-		return Add(os.Args[2:])
+		return Add(configuration, os.Args[2:])
 	case "remove":
-		return Remove(os.Args[2:])
+		return Remove(configuration, os.Args[2:])
 	case "source":
 		return Source()
 	default:
 		return fmt.Errorf("Invalid Command. Please use -h or --help flags to see available commands.")
 	}
 
-	if err := config.WriteConfig(); err != nil {
+	if err := config.WriteConfig(configuration); err != nil {
 		return err
 	}
 	return nil
