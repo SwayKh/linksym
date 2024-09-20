@@ -16,21 +16,29 @@ import (
 // files and directory, and handling the special scenario of a File/Dir which is
 // already moved by the user, and just needs to be linked, Skipping the move of
 // file step of the Linking process
-func Add(args []string) error {
-	switch len(args) {
+func Add(configuration *config.AppConfig, args []string) error {
+	toMove := true
 
+	switch len(args) {
 	case 1:
 		source, err := filePathInfo(args[0])
 		if err != nil {
 			return err
-		} else if !source.Exists {
+		}
+
+		if !source.Exists {
 			return fmt.Errorf("File %s doesn't exist", source.AbsPath)
 		}
 
-		filename := filepath.Base(source.AbsPath)
-		destinationPath := filepath.Join(config.Configuration.InitDirectory, filename)
+		sourcePath := source.AbsPath
+		filename := filepath.Base(sourcePath)
+		destinationPath := filepath.Join(config.InitDirectory, filename)
 
-		return linker.MoveAndLink(source.AbsPath, destinationPath, source.IsDir)
+		err = linker.MoveAndLink(sourcePath, destinationPath, source.IsDir)
+		if err != nil {
+			return err
+		}
+		configuration.AddRecord(sourcePath, destinationPath)
 
 	case 2:
 		destination, err := filePathInfo(args[1])
@@ -50,11 +58,13 @@ func Add(args []string) error {
 		isDestinationDir := destination.Exists && destination.IsDir
 		isDestinationFile := destination.Exists && !destination.IsDir
 
+		sourcePath := source.AbsPath
+		destinationPath := destination.AbsPath
+
 		switch {
 		// Link Source File to inside of Destination directory
 		case isSourceFile && isDestinationDir:
-			destination.AbsPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
-			return linker.MoveAndLink(source.AbsPath, destination.AbsPath, isSourceDir)
+			destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 
 		case isSourceFile && isDestinationFile:
 			return fmt.Errorf("Destination file %s already exists", destination.AbsPath)
@@ -63,14 +73,12 @@ func Add(args []string) error {
 		// on trailling / provided with argument
 		case isSourceFile && !destination.Exists:
 			if destination.HasSlash {
-				destination.AbsPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
+				destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 			}
-			return linker.MoveAndLink(source.AbsPath, destination.AbsPath, isSourceDir)
 
 		// Link Source Directory to inside of Destination directory
 		case isSourceDir && isDestinationDir:
-			destination.AbsPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
-			return linker.MoveAndLink(source.AbsPath, destination.AbsPath, isSourceDir)
+			destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 
 		// Can't link a Directory to a File
 		case isSourceDir && isDestinationFile:
@@ -81,8 +89,7 @@ func Add(args []string) error {
 		// to a File
 		case isSourceDir && !destination.Exists:
 			if destination.HasSlash {
-				destination.AbsPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
-				return linker.MoveAndLink(source.AbsPath, destination.AbsPath, isSourceDir)
+				destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 			} else {
 				return fmt.Errorf("Can't link a Directory: %s to a File: %s", source.AbsPath, destination.AbsPath)
 			}
@@ -95,17 +102,18 @@ func Add(args []string) error {
 				return fmt.Errorf("Can't Link a Directory %s to a File %s", source.AbsPath, destination.AbsPath)
 			} else {
 				// Source is a file which doesn't exist, Destination is a file
-				return linker.Link(source.AbsPath, destination.AbsPath)
+				toMove = false
 			}
 
 		// Source Doesn't exists(Can be file or dir), But Destination does, and is a directory
 		case !source.Exists && isDestinationDir:
 			if source.HasSlash {
 				// Given Source path has a trailing /, hence it's a directory
-				return linker.Link(source.AbsPath, destination.AbsPath)
+				toMove = false
+			} else {
+				// Else Source is a file, and destination is a directory
+				return fmt.Errorf("Can't link a File: %s to a Directory: %s", source.AbsPath, destination.AbsPath)
 			}
-			// Else Source is a file, and destination is a directory
-			return fmt.Errorf("Can't link a File: %s to a Directory: %s", source.AbsPath, destination.AbsPath)
 
 		// Source and Destination Both Don't Exist
 		case !source.Exists && !destination.Exists:
@@ -115,9 +123,20 @@ func Add(args []string) error {
 			return fmt.Errorf("Invalid arguments provided")
 		}
 
+		if toMove {
+			err = linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
+		} else {
+			err = linker.Link(sourcePath, destinationPath)
+		}
+		if err != nil {
+			return err
+		}
+		configuration.AddRecord(source.AbsPath, destination.AbsPath)
+
 	default:
 		return fmt.Errorf("Invalid number of arguments")
 	}
+	return nil
 }
 
 // Append filename from Source path to Destination path
