@@ -16,6 +16,7 @@ var (
 	HomeDirectory string
 	ConfigPath    string
 	Configuration appConfig
+	InitDirectory string
 )
 
 type appConfig struct {
