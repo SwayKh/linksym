@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"path/filepath"
 )
 
@@ -15,11 +14,10 @@ import (
 var (
 	HomeDirectory string
 	ConfigPath    string
-	Configuration appConfig
 	InitDirectory string
 )
 
-type appConfig struct {
+type AppConfig struct {
 	InitDirectory string   `yaml:"init_directory"`
 	Records       []record `yaml:"records"`
 }
