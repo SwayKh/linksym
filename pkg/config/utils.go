@@ -22,7 +22,7 @@ func CheckFile(path string) (bool, os.FileInfo, error) {
 // Expand the ~ and $init_directory variables to their respective values
 func expandPath(path string) string {
 	if strings.HasPrefix(path, "$init_directory") {
-		path = strings.Replace(path, "$init_directory", Configuration.InitDirectory, 1)
+		path = strings.Replace(path, "$init_directory", InitDirectory, 1)
 	}
 	if strings.HasPrefix(path, "~") {
 		path = strings.Replace(path, "~", HomeDirectory, 1)
@@ -36,8 +36,8 @@ func aliasPath(path string, skipInitDir bool) string {
 	if strings.HasPrefix(path, HomeDirectory) {
 		path = strings.Replace(path, HomeDirectory, "~", 1)
 	}
-	if !skipInitDir && strings.HasPrefix(path, Configuration.InitDirectory) {
-		path = strings.Replace(path, Configuration.InitDirectory, "$init_directory", 1)
+	if !skipInitDir && strings.HasPrefix(path, InitDirectory) {
+		path = strings.Replace(path, InitDirectory, "$init_directory", 1)
 	}
 
 	return path
