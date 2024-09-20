@@ -10,16 +10,10 @@ import (
 
 // Load config, Setup up Global variables and handle all subcommand switching
 func Run() error {
-	var err error
-
 	CreateFlags()
 	flag.Parse()
 
-	// Since the Init Command creates the config file, the LoadConfig function
-	// can't be called before handling the init subcommand.
-	if flag.Arg(0) == "init" {
-		return Init()
-	}
+	configName := ".linksym.yaml"
 
 	err := config.GetHomePath()
 	if err != nil {
@@ -27,6 +21,14 @@ func Run() error {
 	}
 
 	err = config.LoadConfig()
+	// Since the Init Command creates the config file, the LoadConfig function
+	// can't be called before handling the init subcommand.
+	// But Init function calls aliasPath, which requires HomeDirectory variable,
+	// and hence function SetupDirectories was split up
+	if flag.Arg(0) == "init" {
+		return Init(configName)
+	}
+
 	if err != nil {
 		return err
 	}
