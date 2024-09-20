@@ -45,13 +45,17 @@ func Run() error {
 	case "init":
 		break
 	case "add":
-		return Add(configuration, os.Args[2:])
+		err = Add(configuration, os.Args[2:])
 	case "remove":
-		return Remove(configuration, os.Args[2:])
+		err = Remove(configuration, os.Args[2:])
 	case "source":
-		return Source()
+		err = Source()
 	default:
-		return fmt.Errorf("Invalid Command. Please use -h or --help flags to see available commands.")
+		err = fmt.Errorf("Invalid Command. Please use -h or --help flags to see available commands.")
+	}
+
+	if err != nil {
+		return err
 	}
 
 	if err := config.WriteConfig(configuration); err != nil {
