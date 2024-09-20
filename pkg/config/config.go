@@ -36,7 +36,7 @@ func SetupDirectories(configuration *AppConfig, configName string) {
 
 // Create a array of Path provided and a Link Name which is appended in the
 // Records of the global Configuration Struct
-func AddRecord(sourcePath, destinationPath string) error {
+func (c *AppConfig) AddRecord(sourcePath string, destinationPath string) {
 	record := record{}
 
 	recordSlice := []string{}
@@ -50,13 +50,15 @@ func AddRecord(sourcePath, destinationPath string) error {
 	record.Name = fileAndDirName
 	record.Paths = recordSlice
 
-	Configuration.Records = append(Configuration.Records, record)
-
-	return nil
+	c.Records = append(c.Records, record)
 }
 
 // Remove a Record of Link Name and Path array from the global configuration
 // struct, which is written to file at the end of program execution
-func RemoveRecord(i int) {
-	Configuration.Records = append(Configuration.Records[:i], Configuration.Records[i+1:]...)
+func (c *AppConfig) RemoveRecord(name string) {
+	for i := len(c.Records) - 1; i >= 0; i-- {
+		if c.Records[i].Name == name {
+			c.Records = append(c.Records[:i], c.Records[i+1:]...)
+		}
+	}
 }
