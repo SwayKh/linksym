@@ -42,6 +42,8 @@ func SetupDirectories() error {
 	return nil
 }
 
+// Create a array of Path provided and a Link Name which is appended in the
+// Records of the global Configuration Struct
 func AddRecord(sourcePath, destinationPath string) error {
 	record := record{}
 
@@ -61,6 +63,8 @@ func AddRecord(sourcePath, destinationPath string) error {
 	return nil
 }
 
+// Remove a Record of Link Name and Path array from the global configuration
+// struct, which is written to file at the end of program execution
 func RemoveRecord(i int) {
 	Configuration.Records = append(Configuration.Records[:i], Configuration.Records[i+1:]...)
 }

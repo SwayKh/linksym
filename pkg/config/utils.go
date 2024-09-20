@@ -13,12 +13,13 @@ func CheckFile(path string) (bool, os.FileInfo, error) {
 		if errors.Is(err, os.ErrNotExist) {
 			return false, nil, nil
 		} else {
-			return false, nil, fmt.Errorf("Error getting file info: \n%w", err)
+			return false, nil, fmt.Errorf("Error getting file info: %w", err)
 		}
 	}
 	return true, fileInfo, nil
 }
 
+// Expand the ~ and $init_directory variables to their respective values
 func expandPath(path string) string {
 	if strings.HasPrefix(path, "$init_directory") {
 		path = strings.Replace(path, "$init_directory", Configuration.InitDirectory, 1)
@@ -29,6 +30,8 @@ func expandPath(path string) string {
 	return path
 }
 
+// Create aliases of ~ and $init_directory to make the paths and the
+// configurations more portable
 func aliasPath(path string, skipInitDir bool) string {
 	if strings.HasPrefix(path, HomeDirectory) {
 		path = strings.Replace(path, HomeDirectory, "~", 1)
