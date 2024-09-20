@@ -10,39 +10,41 @@ import (
 
 // Load the configuration from .linksym.yaml configuration file and unmarshall
 // it into the global Configuration variable, and un-alias all paths
-func LoadConfig() error {
+func LoadConfig(configPath string) (*AppConfig, error) {
 	// Check if config file exists
-	if fileExists, _, err := CheckFile(ConfigPath); err != nil {
-		return fmt.Errorf("Error checking if .linksym.yaml exists: %w", err)
+	if fileExists, _, err := CheckFile(configPath); err != nil {
+		return nil, fmt.Errorf("Error checking if .linksym.yaml exists: %w", err)
 	} else if !fileExists {
-		return fmt.Errorf("No .linksym.yaml file found. Please run linksym init.")
+		return nil, fmt.Errorf("No .linksym.yaml file found. Please run linksym init.")
 	}
 
-	file, err := os.Open(ConfigPath)
+	file, err := os.Open(configPath)
 	if err != nil {
-		return fmt.Errorf("Error opening config file: %s ", ConfigPath)
+		return nil, fmt.Errorf("Error opening config file: %s ", configPath)
 	}
 	defer file.Close()
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return fmt.Errorf("Error reading data from config file: %w", err)
+		return nil, fmt.Errorf("Error reading data from config file: %w", err)
 	}
 
-	err = yaml.Unmarshal(data, &Configuration)
+	configuration := &AppConfig{}
+
+	err = yaml.Unmarshal(data, &configuration)
 	if err != nil {
-		return fmt.Errorf("Error loading data to appConfig{}: %w", err)
+		return nil, fmt.Errorf("Error loading data to appConfig{}: %w", err)
 	}
 
-	Configuration.InitDirectory = expandPath(Configuration.InitDirectory)
+	configuration.InitDirectory = expandPath(configuration.InitDirectory)
 
-	for i, v := range Configuration.Records {
+	for i, v := range configuration.Records {
 		for j := range v.Paths {
-			Configuration.Records[i].Paths[j] = expandPath(Configuration.Records[i].Paths[j])
+			configuration.Records[i].Paths[j] = expandPath(configuration.Records[i].Paths[j])
 		}
 	}
 
-	return nil
+	return configuration, nil
 }
 
 // Write the Configuration struct data to .linksym.yaml file after aliasing all
