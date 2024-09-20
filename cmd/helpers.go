@@ -35,7 +35,9 @@ func filePathInfo(path string) (info fileInfo, err error) {
 		return fileInfo{}, err
 	}
 
-	if info.Info.IsDir() {
+	// If file doesn't exist, the info.IsDir check will return an nil pointer
+	// dereferencing error
+	if info.Exists && info.Info.IsDir() {
 		info.IsDir = true
 	}
 
