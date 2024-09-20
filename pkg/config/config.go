@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 )
 
@@ -29,17 +28,9 @@ type record struct {
 	Paths []string `yaml:"paths"`
 }
 
-func SetupDirectories() error {
-	var err error
-	HomeDirectory, err = os.UserHomeDir()
-	if err != nil {
-		return fmt.Errorf("Couldn't get the home directory")
-	}
-
-	ConfigName := ".linksym.yaml"
-	ConfigPath = filepath.Join(Configuration.InitDirectory, ConfigName)
-
-	return nil
+func SetupDirectories(configuration *AppConfig, configName string) {
+	InitDirectory = configuration.InitDirectory
+	ConfigPath = filepath.Join(InitDirectory, configName)
 }
 
 // Create a array of Path provided and a Link Name which is appended in the
