@@ -49,19 +49,19 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 
 // Write the Configuration struct data to .linksym.yaml file after aliasing all
 // paths with ~ and $init_directory
-func WriteConfig() error {
-	Configuration.InitDirectory = aliasPath(Configuration.InitDirectory, true)
+func WriteConfig(configuration *AppConfig) error {
+	configuration.InitDirectory = aliasPath(configuration.InitDirectory, true)
 
 	// Alias path absolute paths before writing to config file
-	for i, v := range Configuration.Records {
+	for i, v := range configuration.Records {
 		for j := range v.Paths {
-			Configuration.Records[i].Paths[j] = aliasPath(Configuration.Records[i].Paths[j], false)
+			configuration.Records[i].Paths[j] = aliasPath(configuration.Records[i].Paths[j], false)
 		}
 	}
 
-	data, err := yaml.Marshal(&Configuration)
+	data, err := yaml.Marshal(&configuration)
 	if err != nil {
-		return fmt.Errorf("Error marshalling data from Configuration{}: %w", err)
+		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
 	}
 
 	err = os.WriteFile(ConfigPath, data, 0o644)
@@ -73,12 +73,7 @@ func WriteConfig() error {
 
 // Create a default config file with empty records and Current working directory
 // variable for Init directory
-func InitialiseConfig() error {
-	err := SetupDirectories()
-	if err != nil {
-		return fmt.Errorf("Initialising Env: %w", err)
-	}
-
+func InitialiseConfig(configPath string) error {
 	InitDirectory, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("Couldn't get the current working directory")
@@ -86,7 +81,7 @@ func InitialiseConfig() error {
 
 	InitDirectory = aliasPath(InitDirectory, true)
 
-	configuration := appConfig{
+	configuration := AppConfig{
 		InitDirectory: InitDirectory,
 		Records:       []record{},
 	}
@@ -96,7 +91,7 @@ func InitialiseConfig() error {
 		return fmt.Errorf("Error marshalling Init Data from Configuration{}: %w", err)
 	}
 
-	err = os.WriteFile(ConfigPath, data, 0o644)
+	err = os.WriteFile(configPath, data, 0o644)
 	if err != nil {
 		return fmt.Errorf("Error writing data to config file: %w", err)
 	}
