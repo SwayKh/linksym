@@ -8,12 +8,18 @@ import (
 	"github.com/SwayKh/linksym/pkg/linker"
 )
 
+// Add function, which handles the Add subcommand and handles all scenarios of
+// file paths provided.
+// Handling one argument is simple enough, just Move the
+// file to cwd and link it.
+// Handling 2 arguments creates lots of different scenario of combination of
+// files and directory, and handling the special scenario of a File/Dir which is
+// already moved by the user, and just needs to be linked, Skipping the move of
+// file step of the Linking process
 func Add(args []string) error {
 	switch len(args) {
 
 	case 1:
-		// Set first arg source path, get absolute path, check if it exists, set the
-		// destination path as cwd+filename of source path
 		source, err := filePathInfo(args[0])
 		if err != nil {
 			return err
@@ -27,10 +33,6 @@ func Add(args []string) error {
 		return linker.MoveAndLink(source.AbsPath, destinationPath, source.IsDir)
 
 	case 2:
-		// set first and second args as source and destination path, get absolute
-		// paths, check if the paths exist, plus handle the special case of source
-		// path not existing but destination path exists, hence creating a link
-		// without the moving the files
 		destination, err := filePathInfo(args[1])
 		if err != nil {
 			return err
@@ -55,7 +57,7 @@ func Add(args []string) error {
 			return linker.MoveAndLink(source.AbsPath, destination.AbsPath, isSourceDir)
 
 		case isSourceFile && isDestinationFile:
-			return fmt.Errorf("Destination path %s already exists", destination.AbsPath)
+			return fmt.Errorf("Destination file %s already exists", destination.AbsPath)
 
 		// Link Source file to Destination by using path as File or Directory based
 		// on trailling / provided with argument
@@ -72,7 +74,7 @@ func Add(args []string) error {
 
 		// Can't link a Directory to a File
 		case isSourceDir && isDestinationFile:
-			return fmt.Errorf("Can't Link a Directory %s to a File %s", source.AbsPath, destination.AbsPath)
+			return fmt.Errorf("Can't link a Directory: %s to a File: %s", source.AbsPath, destination.AbsPath)
 
 		// Link Source directory to Destination by using path as File or Directory
 		// based on trailling / provided with argument. But can't link a Directory
@@ -82,10 +84,11 @@ func Add(args []string) error {
 				destination.AbsPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 				return linker.MoveAndLink(source.AbsPath, destination.AbsPath, isSourceDir)
 			} else {
-				return fmt.Errorf("Can't Link a Directory %s to a File %s", source.AbsPath, destination.AbsPath)
+				return fmt.Errorf("Can't link a Directory: %s to a File: %s", source.AbsPath, destination.AbsPath)
 			}
 
-		// Source Doesn't exists(Can be file or dir), But Destination does, and is a file
+		// Source Doesn't exists, But Destination does, and is a file and the Source
+		// can be a directory path or a file path
 		case !source.Exists && isDestinationFile:
 			if source.HasSlash {
 				// Given Source path has a trailing /, hence it's a directory
@@ -102,14 +105,13 @@ func Add(args []string) error {
 				return linker.Link(source.AbsPath, destination.AbsPath)
 			}
 			// Else Source is a file, and destination is a directory
-			return fmt.Errorf("Can't Link a file %s to a directory %s", source.AbsPath, destination.AbsPath)
+			return fmt.Errorf("Can't link a File: %s to a Directory: %s", source.AbsPath, destination.AbsPath)
 
 		// Source and Destination Both Don't Exist
 		case !source.Exists && !destination.Exists:
 			return fmt.Errorf("Source and Destination paths don't exist, Nothing to Link")
 
 		default:
-			// return fmt.Errorf("Unable to link %s to %s. \nEither the Source or Destination path don't exist, \nor There is a mismatch of types, eg - Directory to a file", source.AbsPath, destination.AbsPath)
 			return fmt.Errorf("Invalid arguments provided")
 		}
 

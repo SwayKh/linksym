@@ -8,17 +8,16 @@ import (
 	"github.com/SwayKh/linksym/pkg/config"
 )
 
+// Move the source file to destination and creates a symlink at the source
+// pointing towards the destination path
 func MoveAndLink(sourcePath, destinationPath string, isDirectory bool) error {
 	// If path is a directory, Rename it
 	if isDirectory {
 		err := os.Rename(sourcePath, destinationPath)
 		if err != nil {
-			return fmt.Errorf("Couldn't rename directory %s to %s: \n%w", sourcePath, destinationPath, err)
+			return fmt.Errorf("Couldn't link directory %s to %s: %w", sourcePath, destinationPath, err)
 		}
 	} else {
-		// If path is a file, create a file at new location, copy it over, and
-		// delete original file. This method allows better handling when linking
-		// across file system than just renaming files
 		err := moveFile(sourcePath, destinationPath)
 		if err != nil {
 			return err
@@ -32,10 +31,12 @@ func MoveAndLink(sourcePath, destinationPath string, isDirectory bool) error {
 	return nil
 }
 
+// Create a symlink of source path at the destination path, and create a record
+// of it
 func Link(sourcePath, destinationPath string) error {
 	err := os.Symlink(destinationPath, sourcePath)
 	if err != nil {
-		return fmt.Errorf("Couldn't create symlink %s: \n%w", destinationPath, err)
+		return fmt.Errorf("Couldn't create symlink %s: %w", destinationPath, err)
 	}
 
 	err = config.AddRecord(sourcePath, destinationPath)
@@ -45,6 +46,8 @@ func Link(sourcePath, destinationPath string) error {
 	return nil
 }
 
+// Remove the symlink file at the source, move the destination file to the
+// original source path. Undoing the MoveAndLink function basically
 func UnLink(sourcePath, destinationPath string, isDirectory bool) error {
 	err := deleteFile(sourcePath)
 	if err != nil {
@@ -54,7 +57,7 @@ func UnLink(sourcePath, destinationPath string, isDirectory bool) error {
 	if isDirectory {
 		err := os.Rename(destinationPath, sourcePath)
 		if err != nil {
-			return fmt.Errorf("Couldn't rename directory %s to %s: \n%w", sourcePath, destinationPath, err)
+			return fmt.Errorf("Couldn't move directory %s to %s: %w", sourcePath, destinationPath, err)
 		}
 	} else {
 		err := moveFile(destinationPath, sourcePath)
@@ -65,26 +68,29 @@ func UnLink(sourcePath, destinationPath string, isDirectory bool) error {
 	return nil
 }
 
+// Create a a file at the destination, copy all contents of the source to the
+// destination and then remove the source. This method allows better handling
+// when linking across file system than just renaming files
 func moveFile(source, destination string) error {
 	src, err := os.Open(source)
 	if err != nil {
-		return fmt.Errorf("Failed to source file: %s: \n%w", source, err)
+		return fmt.Errorf("Failed to open file: %s: %w", source, err)
 	}
 	defer src.Close()
 
 	dst, err := os.Create(destination)
 	if err != nil {
-		return fmt.Errorf("Failed to create file %s: \n%w", destination, err)
+		return fmt.Errorf("Failed to create file %s: %w", destination, err)
 	}
 	defer dst.Close()
 
 	_, err = io.Copy(dst, src)
 	if err != nil {
-		return fmt.Errorf("Failed to copy file %s to %s: \n%w", source, destination, err)
+		return fmt.Errorf("Failed to copy file %s to %s: %w", source, destination, err)
 	}
 	err = dst.Sync()
 	if err != nil {
-		return fmt.Errorf("Failed to write file %s to disk: \n%w", destination, err)
+		return fmt.Errorf("Failed to write file %s to disk: %w", destination, err)
 	}
 
 	err = deleteFile(source)
@@ -94,13 +100,14 @@ func moveFile(source, destination string) error {
 	return nil
 }
 
+// Delete the file at the given path
 func deleteFile(path string) error {
 	err := os.Remove(path)
 	if err != nil {
 		if os.IsPermission(err) {
-			return fmt.Errorf("Failed to Remove file %s\n Please run with elevated privileges", path)
+			return fmt.Errorf("Failed to Remove file %s. Please run with elevated privileges", path)
 		} else {
-			return fmt.Errorf("Failed to Remove file %s: \n%w", path, err)
+			return fmt.Errorf("Failed to Remove file %s: %w", path, err)
 		}
 	}
 	return nil

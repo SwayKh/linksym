@@ -8,6 +8,7 @@ import (
 	"github.com/SwayKh/linksym/pkg/config"
 )
 
+// Load config, Setup up Global variables and handle all subcommand switching
 func Run() error {
 	var err error
 

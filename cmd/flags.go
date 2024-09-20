@@ -16,6 +16,7 @@ var (
 	ConfigPath string
 )
 
+// Setup the Flags for the CLI
 func CreateFlags() {
 	// Handle both -h and --help with one boolean
 	HelpFlag = flag.Bool("h", false, "Show help")
