@@ -11,12 +11,6 @@ import (
 // The config file can be either .json .ini .toml .yaml
 // I think yaml is a good file format for this
 
-var (
-	HomeDirectory string
-	ConfigPath    string
-	InitDirectory string
-)
-
 type AppConfig struct {
 	InitDirectory string   `yaml:"init_directory"`
 	Records       []record `yaml:"records"`
@@ -25,11 +19,6 @@ type AppConfig struct {
 type record struct {
 	Name  string   `yaml:"name"`
 	Paths []string `yaml:"paths"`
-}
-
-func SetupDirectories(configuration *AppConfig, configName string) {
-	InitDirectory = configuration.InitDirectory
-	ConfigPath = filepath.Join(InitDirectory, configName)
 }
 
 // Create a array of Path provided and a Link Name which is appended in the

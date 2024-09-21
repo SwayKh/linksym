@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/SwayKh/linksym/pkg/global"
 )
 
 type fileInfo struct {
@@ -46,4 +48,42 @@ func GetFileInfo(path string) (info fileInfo, err error) {
 	}
 
 	return info, nil
+}
+
+// Expand the ~ and $init_directory variables to their respective values
+func ExpandPath(path string) string {
+	if strings.HasPrefix(path, "$init_directory") {
+		path = strings.Replace(path, "$init_directory", global.InitDirectory, 1)
+	}
+	if strings.HasPrefix(path, "~") {
+		path = strings.Replace(path, "~", global.HomeDirectory, 1)
+	}
+	return path
+}
+
+// Create aliases of ~ and $init_directory to make the paths and the
+// configurations more portable
+func AliasPath(path string, skipInitDir bool) string {
+	if strings.HasPrefix(path, global.HomeDirectory) {
+		path = strings.Replace(path, global.HomeDirectory, "~", 1)
+	}
+	if !skipInitDir && strings.HasPrefix(path, global.InitDirectory) {
+		path = strings.Replace(path, global.InitDirectory, "$init_directory", 1)
+	}
+
+	return path
+}
+
+func SetupDirectories(initDir string, configName string) {
+	global.InitDirectory = initDir
+	global.ConfigPath = filepath.Join(global.InitDirectory, configName)
+}
+
+func InitialiseHomePath() error {
+	var err error
+	global.HomeDirectory, err = os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("Couldn't get the home directory")
+	}
+	return nil
 }
