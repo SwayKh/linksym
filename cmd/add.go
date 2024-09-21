@@ -6,6 +6,7 @@ import (
 
 	"github.com/SwayKh/linksym/pkg/config"
 	"github.com/SwayKh/linksym/pkg/linker"
+	"github.com/SwayKh/linksym/pkg/utils"
 )
 
 // Add function, which handles the Add subcommand and handles all scenarios of
@@ -21,7 +22,7 @@ func Add(configuration *config.AppConfig, args []string) error {
 
 	switch len(args) {
 	case 1:
-		source, err := filePathInfo(args[0])
+		source, err := utils.GetFileInfo(args[0])
 		if err != nil {
 			return err
 		}
@@ -41,12 +42,12 @@ func Add(configuration *config.AppConfig, args []string) error {
 		configuration.AddRecord(sourcePath, destinationPath)
 
 	case 2:
-		destination, err := filePathInfo(args[1])
+		destination, err := utils.GetFileInfo(args[1])
 		if err != nil {
 			return err
 		}
 
-		source, err := filePathInfo(args[0])
+		source, err := utils.GetFileInfo(args[0])
 		if err != nil {
 			return err
 		}
