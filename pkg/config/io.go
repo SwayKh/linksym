@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/SwayKh/linksym/pkg/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -12,13 +13,14 @@ import (
 // it into the global Configuration variable, and un-alias all paths
 func LoadConfig(configPath string) (*AppConfig, error) {
 	// Check if config file exists
-	if fileExists, _, err := CheckFile(configPath); err != nil {
-		return nil, fmt.Errorf("Error checking if .linksym.yaml exists: %w", err)
-	} else if !fileExists {
+	config, err := utils.GetFileInfo(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("Error getting File Info of %s: %w", configPath, err)
+	} else if !config.Exists {
 		return nil, fmt.Errorf("No .linksym.yaml file found. Please run linksym init.")
 	}
 
-	file, err := os.Open(configPath)
+	file, err := os.Open(config.AbsPath)
 	if err != nil {
 		return nil, fmt.Errorf("Error opening config file: %s ", configPath)
 	}

@@ -15,7 +15,7 @@ func Run() error {
 
 	configName := ".linksym.yaml"
 
-	err := config.GetHomePath()
+	err := config.InitialiseHomePath()
 	if err != nil {
 		return err
 	}

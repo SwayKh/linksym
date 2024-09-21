@@ -6,6 +6,7 @@ import (
 
 	"github.com/SwayKh/linksym/pkg/config"
 	"github.com/SwayKh/linksym/pkg/linker"
+	"github.com/SwayKh/linksym/pkg/utils"
 )
 
 // Get the "LinkName" as an argument, which should be the path relative to the
@@ -19,7 +20,7 @@ func Remove(configuration *config.AppConfig, args []string) error {
 		var err error
 
 		// Get the File Info of LinkName provided from the arguments
-		linkPath, err := filePathInfo(args[0])
+		linkPath, err := utils.GetFileInfo(args[0])
 		if err != nil {
 			return err
 		} else if !linkPath.Exists {

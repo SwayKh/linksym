@@ -1,23 +1,10 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
 )
-
-func CheckFile(path string) (bool, os.FileInfo, error) {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return false, nil, nil
-		} else {
-			return false, nil, fmt.Errorf("Error getting file info: %w", err)
-		}
-	}
-	return true, fileInfo, nil
-}
 
 // Expand the ~ and $init_directory variables to their respective values
 func expandPath(path string) string {
@@ -43,7 +30,7 @@ func aliasPath(path string, skipInitDir bool) string {
 	return path
 }
 
-func GetHomePath() error {
+func InitialiseHomePath() error {
 	var err error
 	HomeDirectory, err = os.UserHomeDir()
 	if err != nil {
