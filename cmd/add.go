@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/SwayKh/linksym/pkg/config"
+	"github.com/SwayKh/linksym/pkg/global"
 	"github.com/SwayKh/linksym/pkg/linker"
 	"github.com/SwayKh/linksym/pkg/utils"
 )
@@ -33,7 +34,7 @@ func Add(configuration *config.AppConfig, args []string) error {
 
 		sourcePath := source.AbsPath
 		filename := filepath.Base(sourcePath)
-		destinationPath := filepath.Join(config.InitDirectory, filename)
+		destinationPath := filepath.Join(global.InitDirectory, filename)
 
 		err = linker.MoveAndLink(sourcePath, destinationPath, source.IsDir)
 		if err != nil {

@@ -7,8 +7,8 @@ import (
 
 	"github.com/SwayKh/linksym/cmd"
 	"github.com/SwayKh/linksym/pkg/config"
+	"github.com/SwayKh/linksym/pkg/utils"
 )
-
 
 func main() {
 	if err := Run(); err != nil {
@@ -24,7 +24,7 @@ func Run() error {
 
 	configName := ".linksym.yaml"
 
-	err := InitialiseHomePath()
+	err := utils.InitialiseHomePath()
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	SetupDirectories(configuration, configName)
+	utils.SetupDirectories(configuration.InitDirectory, configName)
 
 	if *cmd.HelpFlag {
 		cmd.Help()

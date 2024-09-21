@@ -38,11 +38,11 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 		return nil, fmt.Errorf("Error loading data to appConfig{}: %w", err)
 	}
 
-	configuration.InitDirectory = expandPath(configuration.InitDirectory)
+	configuration.InitDirectory = utils.ExpandPath(configuration.InitDirectory)
 
 	for i, v := range configuration.Records {
 		for j := range v.Paths {
-			configuration.Records[i].Paths[j] = expandPath(configuration.Records[i].Paths[j])
+			configuration.Records[i].Paths[j] = utils.ExpandPath(configuration.Records[i].Paths[j])
 		}
 	}
 
@@ -51,13 +51,13 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 
 // Write the Configuration struct data to .linksym.yaml file after aliasing all
 // paths with ~ and $init_directory
-func WriteConfig(configuration *AppConfig) error {
-	configuration.InitDirectory = aliasPath(configuration.InitDirectory, true)
+func WriteConfig(configuration *AppConfig, configPath string) error {
+	configuration.InitDirectory = utils.AliasPath(configuration.InitDirectory, true)
 
 	// Alias path absolute paths before writing to config file
 	for i, v := range configuration.Records {
 		for j := range v.Paths {
-			configuration.Records[i].Paths[j] = aliasPath(configuration.Records[i].Paths[j], false)
+			configuration.Records[i].Paths[j] = utils.AliasPath(configuration.Records[i].Paths[j], false)
 		}
 	}
 
@@ -66,7 +66,7 @@ func WriteConfig(configuration *AppConfig) error {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
 	}
 
-	err = os.WriteFile(ConfigPath, data, 0o644)
+	err = os.WriteFile(configPath, data, 0o644)
 	if err != nil {
 		return fmt.Errorf("Error writing record to config file: %w", err)
 	}
@@ -81,7 +81,7 @@ func InitialiseConfig(configPath string) error {
 		return fmt.Errorf("Couldn't get the current working directory")
 	}
 
-	InitDirectory = aliasPath(InitDirectory, true)
+	InitDirectory = utils.AliasPath(InitDirectory, true)
 
 	configuration := AppConfig{
 		InitDirectory: InitDirectory,
