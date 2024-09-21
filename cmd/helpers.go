@@ -1,12 +1,11 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/SwayKh/linksym/pkg/config"
 )
 
 type fileInfo struct {
@@ -18,8 +17,9 @@ type fileInfo struct {
 }
 
 // Handle the repeating function calls in one place
-func filePathInfo(path string) (info fileInfo, err error) {
+func getFileInfo(path string) (info fileInfo, err error) {
 	info = fileInfo{}
+	info.Exists = true
 
 	if strings.HasSuffix(path, string(os.PathSeparator)) {
 		info.HasSlash = true
@@ -27,12 +27,16 @@ func filePathInfo(path string) (info fileInfo, err error) {
 
 	info.AbsPath, err = filepath.Abs(path)
 	if err != nil {
-		return fileInfo{}, fmt.Errorf("Error getting absolute path of file %s", path)
+		return fileInfo{}, fmt.Errorf("Error getting absolute path of file %s: %w", path, err)
 	}
 
-	info.Exists, info.Info, err = config.CheckFile(info.AbsPath)
+	info.Info, err = os.Stat(info.AbsPath)
 	if err != nil {
-		return fileInfo{}, err
+		if errors.Is(err, os.ErrNotExist) {
+			info.Exists = false
+		} else {
+			return fileInfo{}, fmt.Errorf("Error getting file info: %w", err)
+		}
 	}
 
 	// If file doesn't exist, the info.IsDir check will return an nil pointer
