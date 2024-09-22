@@ -6,13 +6,6 @@ import (
 	"github.com/SwayKh/linksym/pkg/utils"
 )
 
-// This package should, create the default config with the initialised directory
-// Read the config for every other command to work and use the variable vales
-// Add data under the "Links" variable whenever a new config is add via the
-// project.
-// The config file can be either .json .ini .toml .yaml
-// I think yaml is a good file format for this
-
 type AppConfig struct {
 	InitDirectory string   `yaml:"init_directory"`
 	Records       []record `yaml:"records"`
@@ -52,6 +45,7 @@ func (c *AppConfig) RemoveRecord(name string) {
 	}
 }
 
+// Un-Alias all paths with ~ and $init_directory with full absolute paths
 func UnAliasConfig(configuration *AppConfig) {
 	configuration.InitDirectory = utils.ExpandPath(configuration.InitDirectory)
 
@@ -62,6 +56,7 @@ func UnAliasConfig(configuration *AppConfig) {
 	}
 }
 
+// Alias all mentions of HomeDirectory and InitDirectory with ~ and $init_directory
 func AliasConfig(configuration *AppConfig) {
 	configuration.InitDirectory = utils.AliasPath(configuration.InitDirectory, true)
 

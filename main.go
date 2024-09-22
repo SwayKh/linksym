@@ -32,7 +32,7 @@ func Run() error {
 	// Since the Init Command creates the config file, the LoadConfig function
 	// can't be called before handling the init subcommand.
 	// But Init function calls aliasPath, which requires HomeDirectory variable,
-	// and hence function SetupDirectories was split up
+	// and InitialiseHomePath needs be called before this.
 	cmd.InitFlag.Parse(os.Args[2:])
 	if flag.Arg(0) == "init" && !cmd.UpdateInitBool {
 		return cmd.Init(configName)
