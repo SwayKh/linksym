@@ -10,7 +10,7 @@ import (
 )
 
 // Load the configuration from .linksym.yaml configuration file and unmarshall
-// it into the global Configuration variable, and un-alias all paths
+// it into the global Configuration variable, and return pointer to this struct
 func LoadConfig(configPath string) (*AppConfig, error) {
 	// Check if config file exists
 	config, err := utils.GetFileInfo(configPath)
@@ -41,8 +41,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 	return configuration, nil
 }
 
-// Write the Configuration struct data to .linksym.yaml file after aliasing all
-// paths with ~ and $init_directory
+// Write the Configuration struct data to .linksym.yaml file
 func WriteConfig(configuration *AppConfig, configPath string) error {
 	data, err := yaml.Marshal(configuration)
 	if err != nil {
@@ -78,6 +77,9 @@ func InitialiseConfig(configPath string) error {
 	return nil
 }
 
+// Takes *AppConfig as argument, updates the init_directory variables with
+// current directory while keeping the []Records intact. And Write config back
+// to file.
 func UpdateInitDirectory(configuration *AppConfig, configPath string) error {
 	InitDirectory, err := os.Getwd()
 	if err != nil {

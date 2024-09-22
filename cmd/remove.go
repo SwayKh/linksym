@@ -9,10 +9,10 @@ import (
 	"github.com/SwayKh/linksym/pkg/utils"
 )
 
-// Get the "LinkName" as an argument, which should be the path relative to the
-// Init Directory, and Find the matching LinkName through the []Records in
-// .linksym.yaml, UnLink it, and Remove from the []Records.
-// Expects one argument, and throws error on multiple arguments provided
+// Get the absolute path of "LinkName", which should be the path relative from
+// the Init Directory, and Find the matching LinkName through the []Records in
+// .linksym.yaml, UnLink it, and Remove from the []Records. Expects one
+// argument, and throws error on multiple arguments provided
 func Remove(configuration *config.AppConfig, args []string) error {
 	switch len(args) {
 	case 1:
@@ -26,6 +26,7 @@ func Remove(configuration *config.AppConfig, args []string) error {
 		} else if !linkPath.Exists {
 			return fmt.Errorf("File %s doesn't exist", linkPath.AbsPath)
 		}
+
 		// Since the "filename" of the record can be the same with a different file,
 		// just linked in separate directories, getting the filename and the above
 		// directory name should make the name unique enough to be checked in

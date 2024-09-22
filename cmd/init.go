@@ -11,6 +11,7 @@ func Init(configName string) error {
 	return nil
 }
 
+// Update the Init Directory variable in the config
 func UpdateInit(configuration *config.AppConfig, configName string) error {
 	err := config.UpdateInitDirectory(configuration, configName)
 	if err != nil {

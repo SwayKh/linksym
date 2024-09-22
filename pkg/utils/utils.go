@@ -76,11 +76,14 @@ func AliasPath(path string, skipInitDir bool) string {
 	return path
 }
 
+// Set values to global variables of InitDirectory and ConfigPath
 func SetupDirectories(initDir string, configName string) {
 	global.InitDirectory = ExpandPath(initDir)
 	global.ConfigPath = filepath.Join(global.InitDirectory, configName)
 }
 
+// Set the global HomeDirectory variable. Separated from SetupDirectories to be
+// used with the Init Subcommand.
 func InitialiseHomePath() error {
 	var err error
 	global.HomeDirectory, err = os.UserHomeDir()

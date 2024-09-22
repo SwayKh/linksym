@@ -29,8 +29,7 @@ func MoveAndLink(sourcePath, destinationPath string, isDirectory bool) error {
 	return nil
 }
 
-// Create a symlink of source path at the destination path, and create a record
-// of it
+// Create a symlink of source path at the destination path,
 func Link(sourcePath, destinationPath string) error {
 	err := os.Symlink(destinationPath, sourcePath)
 	if err != nil {
@@ -40,7 +39,7 @@ func Link(sourcePath, destinationPath string) error {
 }
 
 // Remove the symlink file at the source, move the destination file to the
-// original source path. Undoing the MoveAndLink function basically
+// original source path. Basically undo-ing the MoveAndLink function
 func UnLink(sourcePath, destinationPath string, isDirectory bool) error {
 	err := deleteFile(sourcePath)
 	if err != nil {
