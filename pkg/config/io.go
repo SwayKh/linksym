@@ -44,7 +44,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 // Write the Configuration struct data to .linksym.yaml file after aliasing all
 // paths with ~ and $init_directory
 func WriteConfig(configuration *AppConfig, configPath string) error {
-	data, err := yaml.Marshal(&configuration)
+	data, err := yaml.Marshal(configuration)
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
 	}
@@ -71,14 +71,25 @@ func InitialiseConfig(configPath string) error {
 		Records:       []record{},
 	}
 
-	data, err := yaml.Marshal(&configuration)
+	err = WriteConfig(&configuration, configPath)
 	if err != nil {
-		return fmt.Errorf("Error marshalling Init Data from Configuration{}: %w", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateInitDirectory(configuration *AppConfig, configPath string) error {
+	InitDirectory, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("Couldn't get the current working directory")
 	}
 
-	err = os.WriteFile(configPath, data, 0o644)
+	InitDirectory = utils.AliasPath(InitDirectory, true)
+	configuration.InitDirectory = InitDirectory
+
+	err = WriteConfig(configuration, configPath)
 	if err != nil {
-		return fmt.Errorf("Error writing data to config file: %w", err)
+		return err
 	}
 	return nil
 }
