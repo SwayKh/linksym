@@ -52,6 +52,7 @@ func GetFileInfo(path string) (info fileInfo, err error) {
 
 // Expand the ~ and $init_directory variables to their respective values
 func ExpandPath(path string) string {
+	// the $init_directory strings comes from the yaml tags for AppConfig
 	if strings.HasPrefix(path, "$init_directory") {
 		path = strings.Replace(path, "$init_directory", global.InitDirectory, 1)
 	}
@@ -64,18 +65,19 @@ func ExpandPath(path string) string {
 // Create aliases of ~ and $init_directory to make the paths and the
 // configurations more portable
 func AliasPath(path string, skipInitDir bool) string {
-	if strings.HasPrefix(path, global.HomeDirectory) {
-		path = strings.Replace(path, global.HomeDirectory, "~", 1)
-	}
+	// the $init_directory strings comes from the yaml tags for AppConfig
 	if !skipInitDir && strings.HasPrefix(path, global.InitDirectory) {
 		path = strings.Replace(path, global.InitDirectory, "$init_directory", 1)
+	}
+	if strings.HasPrefix(path, global.HomeDirectory) {
+		path = strings.Replace(path, global.HomeDirectory, "~", 1)
 	}
 
 	return path
 }
 
 func SetupDirectories(initDir string, configName string) {
-	global.InitDirectory = initDir
+	global.InitDirectory = ExpandPath(initDir)
 	global.ConfigPath = filepath.Join(global.InitDirectory, configName)
 }
 
