@@ -37,16 +37,23 @@ func Run() error {
 		return cmd.Init(configName)
 	}
 
-	configuration, err := config.LoadConfig(configName)
-	if err != nil {
-		return err
-	}
-	utils.SetupDirectories(configuration.InitDirectory, configName)
-
 	if *cmd.HelpFlag {
 		cmd.Help()
 		os.Exit(0)
 	}
+
+	configuration, err := config.LoadConfig(configName)
+	if err != nil {
+		return err
+	}
+
+	// Some issues here. UnAliasPath requires global.InitDirectory and which is
+	// unaliasing the config, then the InitDirectory, ConfigPath will have ~ as
+	// setup by SetupDirectories(), But if setup SetupDirectories is run before
+	// alias for user home directory.
+	// Solved, call the ExpandPath function on the InitDir inside SetupDirectories
+	utils.SetupDirectories(configuration.InitDirectory, configName)
+	config.UnAliasConfig(configuration)
 
 	switch flag.Arg(0) {
 	case "":
@@ -67,6 +74,7 @@ func Run() error {
 		return err
 	}
 
+	config.AliasConfig(configuration)
 	if err := config.WriteConfig(configuration, configName); err != nil {
 		return err
 	}

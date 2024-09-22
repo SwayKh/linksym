@@ -38,29 +38,12 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 		return nil, fmt.Errorf("Error loading data to appConfig{}: %w", err)
 	}
 
-	configuration.InitDirectory = utils.ExpandPath(configuration.InitDirectory)
-
-	for i, v := range configuration.Records {
-		for j := range v.Paths {
-			configuration.Records[i].Paths[j] = utils.ExpandPath(configuration.Records[i].Paths[j])
-		}
-	}
-
 	return configuration, nil
 }
 
 // Write the Configuration struct data to .linksym.yaml file after aliasing all
 // paths with ~ and $init_directory
 func WriteConfig(configuration *AppConfig, configPath string) error {
-	configuration.InitDirectory = utils.AliasPath(configuration.InitDirectory, true)
-
-	// Alias path absolute paths before writing to config file
-	for i, v := range configuration.Records {
-		for j := range v.Paths {
-			configuration.Records[i].Paths[j] = utils.AliasPath(configuration.Records[i].Paths[j], false)
-		}
-	}
-
 	data, err := yaml.Marshal(&configuration)
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
