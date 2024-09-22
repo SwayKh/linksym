@@ -33,7 +33,8 @@ func Run() error {
 	// can't be called before handling the init subcommand.
 	// But Init function calls aliasPath, which requires HomeDirectory variable,
 	// and hence function SetupDirectories was split up
-	if flag.Arg(0) == "init" {
+	cmd.InitFlag.Parse(os.Args[2:])
+	if flag.Arg(0) == "init" && !cmd.UpdateInitBool {
 		return cmd.Init(configName)
 	}
 
@@ -47,11 +48,6 @@ func Run() error {
 		return err
 	}
 
-	// Some issues here. UnAliasPath requires global.InitDirectory and which is
-	// unaliasing the config, then the InitDirectory, ConfigPath will have ~ as
-	// setup by SetupDirectories(), But if setup SetupDirectories is run before
-	// alias for user home directory.
-	// Solved, call the ExpandPath function on the InitDir inside SetupDirectories
 	utils.SetupDirectories(configuration.InitDirectory, configName)
 	config.UnAliasConfig(configuration)
 
@@ -59,7 +55,11 @@ func Run() error {
 	case "":
 		cmd.Help()
 	case "init":
-		break
+		if cmd.UpdateInitBool {
+			return cmd.UpdateInit(configuration, configName)
+		} else {
+			break
+		}
 	case "add":
 		err = cmd.Add(configuration, os.Args[2:], true)
 	case "remove":
