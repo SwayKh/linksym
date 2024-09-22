@@ -18,7 +18,7 @@ import (
 // files and directory, and handling the special scenario of a File/Dir which is
 // already moved by the user, and just needs to be linked, Skipping the move of
 // file step of the Linking process
-func Add(configuration *config.AppConfig, args []string) error {
+func Add(configuration *config.AppConfig, args []string, updateRecord bool) error {
 	toMove := true
 
 	switch len(args) {
@@ -40,7 +40,9 @@ func Add(configuration *config.AppConfig, args []string) error {
 		if err != nil {
 			return err
 		}
-		configuration.AddRecord(sourcePath, destinationPath)
+		if updateRecord {
+			configuration.AddRecord(sourcePath, destinationPath)
+		}
 
 	case 2:
 		destination, err := utils.GetFileInfo(args[1])
@@ -133,7 +135,9 @@ func Add(configuration *config.AppConfig, args []string) error {
 		if err != nil {
 			return err
 		}
-		configuration.AddRecord(sourcePath, destinationPath)
+		if updateRecord {
+			configuration.AddRecord(sourcePath, destinationPath)
+		}
 
 	default:
 		return fmt.Errorf("Invalid number of arguments")
