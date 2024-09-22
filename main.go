@@ -29,13 +29,25 @@ func Run() error {
 		return err
 	}
 
+	subcommand := flag.Arg(0)
+
+	if len(flag.Args()) < 1 {
+		cmd.Help()
+		os.Exit(1)
+	}
+
+	args := flag.Args()[1:]
+
 	// Since the Init Command creates the config file, the LoadConfig function
 	// can't be called before handling the init subcommand.
 	// But Init function calls aliasPath, which requires HomeDirectory variable,
 	// and InitialiseHomePath needs be called before this.
-	if flag.Arg(0) == "init" {
-		if err = cmd.InitFlag.Parse(os.Args[2:]); err != nil {
+	if subcommand == "init" {
+		if err = cmd.InitFlag.Parse(args); err != nil {
 			return err
+		}
+		if len(args) > 0 {
+			return fmt.Errorf("'init' subcommand doesn't accept any arguments.\nUsage: linksym init [-u, --update]")
 		}
 		if !cmd.UpdateInitBool {
 			return cmd.Init(configName)
@@ -55,20 +67,30 @@ func Run() error {
 	utils.SetupDirectories(configuration.InitDirectory, configName)
 	config.UnAliasConfig(configuration)
 
-	switch flag.Arg(0) {
-	case "":
-		cmd.Help()
+	switch subcommand {
 	case "init":
+		if len(args) > 0 {
+			return fmt.Errorf("'init' subcommand doesn't accept any arguments.\nUsage: linksym init [-u, --update]")
+		}
 		if cmd.UpdateInitBool {
 			return cmd.UpdateInit(configuration, configName)
 		} else {
 			break
 		}
 	case "add":
-		err = cmd.Add(configuration, os.Args[2:], true)
+		if len(args) > 2 {
+			return fmt.Errorf("'add' subcommand doesn't accept more than 2 arguments.\nUsage: linksym add <source> <destination>")
+		}
+		err = cmd.Add(configuration, args, true)
 	case "remove":
-		err = cmd.Remove(configuration, os.Args[2:])
+		if len(args) > 1 {
+			return fmt.Errorf("'remove' subcommand doesn't accept more than 1 argument.\nUsage: linksym remove <file name>")
+		}
+		err = cmd.Remove(configuration, args)
 	case "source":
+		if len(args) > 0 {
+			return fmt.Errorf("'source' subcommand doesn't accept any arguments.\nUsage: linksym source")
+		}
 		err = cmd.Source(configuration)
 	default:
 		err = fmt.Errorf("Invalid Command. Please use -h or --help flags to see available commands.")
