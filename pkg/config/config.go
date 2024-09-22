@@ -2,6 +2,8 @@ package config
 
 import (
 	"path/filepath"
+
+	"github.com/SwayKh/linksym/pkg/utils"
 )
 
 // This package should, create the default config with the initialised directory
@@ -46,6 +48,27 @@ func (c *AppConfig) RemoveRecord(name string) {
 	for i := len(c.Records) - 1; i >= 0; i-- {
 		if c.Records[i].Name == name {
 			c.Records = append(c.Records[:i], c.Records[i+1:]...)
+		}
+	}
+}
+
+func UnAliasConfig(configuration *AppConfig) {
+	configuration.InitDirectory = utils.ExpandPath(configuration.InitDirectory)
+
+	for i, v := range configuration.Records {
+		for j := range v.Paths {
+			configuration.Records[i].Paths[j] = utils.ExpandPath(configuration.Records[i].Paths[j])
+		}
+	}
+}
+
+func AliasConfig(configuration *AppConfig) {
+	configuration.InitDirectory = utils.AliasPath(configuration.InitDirectory, true)
+
+	// Alias path absolute paths before writing to config file
+	for i, v := range configuration.Records {
+		for j := range v.Paths {
+			configuration.Records[i].Paths[j] = utils.AliasPath(configuration.Records[i].Paths[j], false)
 		}
 	}
 }
