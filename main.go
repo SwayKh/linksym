@@ -46,7 +46,7 @@ func Run() error {
 		if err = cmd.InitFlag.Parse(args); err != nil {
 			return err
 		}
-		if len(args) > 0 {
+		if remainingArgs := cmd.InitFlag.Args(); len(remainingArgs) > 0 {
 			return fmt.Errorf("'init' subcommand doesn't accept any arguments.\nUsage: linksym init [-u, --update]")
 		}
 		if !cmd.UpdateInitBool {
@@ -69,13 +69,8 @@ func Run() error {
 
 	switch subcommand {
 	case "init":
-		if len(args) > 0 {
-			return fmt.Errorf("'init' subcommand doesn't accept any arguments.\nUsage: linksym init [-u, --update]")
-		}
 		if cmd.UpdateInitBool {
 			return cmd.UpdateInit(configuration, configName)
-		} else {
-			break
 		}
 	case "add":
 		if len(args) > 2 {
