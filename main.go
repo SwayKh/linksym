@@ -33,9 +33,13 @@ func Run() error {
 	// can't be called before handling the init subcommand.
 	// But Init function calls aliasPath, which requires HomeDirectory variable,
 	// and InitialiseHomePath needs be called before this.
-	cmd.InitFlag.Parse(os.Args[2:])
-	if flag.Arg(0) == "init" && !cmd.UpdateInitBool {
-		return cmd.Init(configName)
+	if flag.Arg(0) == "init" {
+		if err = cmd.InitFlag.Parse(os.Args[2:]); err != nil {
+			return err
+		}
+		if !cmd.UpdateInitBool {
+			return cmd.Init(configName)
+		}
 	}
 
 	if *cmd.HelpFlag {
