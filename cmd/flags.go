@@ -5,15 +5,16 @@ import (
 )
 
 var (
-	AddFlag    *flag.FlagSet
-	RemoveFlag *flag.FlagSet
-	InitFlag   *flag.FlagSet
-	SourceFlag *flag.FlagSet
-	HelpFlag   *bool
-	SPath      string
-	DPath      string
-	RemovePath string
-	ConfigPath string
+	AddFlag        *flag.FlagSet
+	RemoveFlag     *flag.FlagSet
+	InitFlag       *flag.FlagSet
+	SourceFlag     *flag.FlagSet
+	UpdateInitBool bool
+	HelpFlag       *bool
+	SPath          string
+	DPath          string
+	RemovePath     string
+	ConfigPath     string
 )
 
 // Setup the Flags for the CLI
@@ -31,6 +32,9 @@ func CreateFlags() {
 	AddFlag.StringVar(&DPath, "destination", "", "(Optional) Destination for symlink")
 
 	RemoveFlag.StringVar(&RemovePath, "path", "", "Path to remove symlink")
+
+	InitFlag.BoolVar(&UpdateInitBool, "u", false, "Update just the Init Directory variable on config")
+	InitFlag.BoolVar(&UpdateInitBool, "update", false, "Update just the Init Directory variable on config")
 
 	SourceFlag.StringVar(&ConfigPath, "path", "", "Path to config file to source")
 }

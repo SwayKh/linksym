@@ -10,3 +10,11 @@ func Init(configName string) error {
 	}
 	return nil
 }
+
+func UpdateInit(configuration *config.AppConfig, configName string) error {
+	err := config.UpdateInitDirectory(configuration, configName)
+	if err != nil {
+		return err
+	}
+	return nil
+}
