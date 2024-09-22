@@ -61,11 +61,11 @@ func Run() error {
 	case "init":
 		break
 	case "add":
-		err = cmd.Add(configuration, os.Args[2:])
+		err = cmd.Add(configuration, os.Args[2:], true)
 	case "remove":
 		err = cmd.Remove(configuration, os.Args[2:])
 	case "source":
-		err = cmd.Source()
+		err = cmd.Source(configuration)
 	default:
 		err = fmt.Errorf("Invalid Command. Please use -h or --help flags to see available commands.")
 	}
