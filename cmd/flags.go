@@ -5,12 +5,12 @@ import (
 )
 
 var (
-	AddFlag        *flag.FlagSet
-	RemoveFlag     *flag.FlagSet
-	InitFlag       *flag.FlagSet
-	SourceFlag     *flag.FlagSet
-	UpdateInitBool bool
-	HelpFlag       *bool
+	AddFlag    *flag.FlagSet
+	RemoveFlag *flag.FlagSet
+	InitFlag   *flag.FlagSet
+	SourceFlag *flag.FlagSet
+	UpdateFlag *flag.FlagSet
+	HelpFlag   *bool
 )
 
 // Setup the Flags for the CLI
@@ -23,8 +23,5 @@ func CreateFlags() {
 	RemoveFlag = flag.NewFlagSet("remove", flag.ExitOnError)
 	InitFlag = flag.NewFlagSet("init", flag.ExitOnError)
 	SourceFlag = flag.NewFlagSet("source", flag.ExitOnError)
-
-	// Create a -u, --update flag for init subcommand to call UpdateInit function
-	InitFlag.BoolVar(&UpdateInitBool, "u", false, "Update just the Init Directory variable on config")
-	InitFlag.BoolVar(&UpdateInitBool, "update", false, "Update just the Init Directory variable on config")
+	UpdateFlag = flag.NewFlagSet("update", flag.ExitOnError)
 }
