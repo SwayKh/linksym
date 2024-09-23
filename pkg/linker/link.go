@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 )
 
 // Move the source file to destination and creates a symlink at the source
@@ -70,6 +71,11 @@ func moveFile(source, destination string) error {
 	}
 	defer src.Close()
 
+	err = os.MkdirAll(filepath.Dir(destination), 0o755)
+	if err != nil {
+		return fmt.Errorf("Failed to create directory %s: %w", filepath.Dir(destination), err)
+	}
+
 	dst, err := os.Create(destination)
 	if err != nil {
 		return fmt.Errorf("Failed to create file %s: %w", destination, err)
@@ -79,10 +85,6 @@ func moveFile(source, destination string) error {
 	_, err = io.Copy(dst, src)
 	if err != nil {
 		return fmt.Errorf("Failed to copy file %s to %s: %w", source, destination, err)
-	}
-	err = dst.Sync()
-	if err != nil {
-		return fmt.Errorf("Failed to write file %s to disk: %w", destination, err)
 	}
 
 	err = deleteFile(source)
