@@ -22,7 +22,7 @@ func Update(configuration *config.AppConfig) error {
 		return fmt.Errorf("Couldn't get the current working directory")
 	}
 
-	utils.SetupDirectories(InitDirectory, global.ConfigPath)
+	utils.SetupDirectories(InitDirectory, filepath.Base(global.ConfigPath))
 	configuration.InitDirectory = InitDirectory
 
 	for i := range configuration.Records {
@@ -34,7 +34,7 @@ func Update(configuration *config.AppConfig) error {
 
 	}
 
-	err = config.WriteConfig(configuration, global.ConfigPath)
+	err = config.WriteConfig(configuration)
 	if err != nil {
 		return nil
 	}
