@@ -43,6 +43,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 
 // Write the Configuration struct data to .linksym.yaml file
 func WriteConfig(configuration *AppConfig, configPath string) error {
+	AliasConfig(configuration)
 	data, err := yaml.Marshal(configuration)
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
