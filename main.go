@@ -43,15 +43,10 @@ func Run() error {
 	// But Init function calls aliasPath, which requires HomeDirectory variable,
 	// and InitialiseHomePath needs be called before this.
 	if subcommand == "init" {
-		if err = cmd.InitFlag.Parse(args); err != nil {
-			return err
+		if len(args) > 0 {
+			return fmt.Errorf("'init' subcommand doesn't accept any arguments.\nUsage: linksym init")
 		}
-		if remainingArgs := cmd.InitFlag.Args(); len(remainingArgs) > 0 {
-			return fmt.Errorf("'init' subcommand doesn't accept any arguments.\nUsage: linksym init [-u, --update]")
-		}
-		if !cmd.UpdateInitBool {
-			return cmd.Init(configName)
-		}
+		return cmd.Init(configName)
 	}
 
 	if *cmd.HelpFlag {
@@ -69,9 +64,7 @@ func Run() error {
 
 	switch subcommand {
 	case "init":
-		if cmd.UpdateInitBool {
-			return cmd.UpdateInit(configuration, configName)
-		}
+		break
 	case "add":
 		if len(args) > 2 {
 			return fmt.Errorf("'add' subcommand doesn't accept more than 2 arguments.\nUsage: linksym add <source> <destination>")

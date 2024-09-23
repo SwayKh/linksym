@@ -76,22 +76,3 @@ func InitialiseConfig(configPath string) error {
 	}
 	return nil
 }
-
-// Takes *AppConfig as argument, updates the init_directory variables with
-// current directory while keeping the []Records intact. And Write config back
-// to file.
-func UpdateInitDirectory(configuration *AppConfig, configPath string) error {
-	InitDirectory, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("Couldn't get the current working directory")
-	}
-
-	InitDirectory = utils.AliasPath(InitDirectory, true)
-	configuration.InitDirectory = InitDirectory
-
-	err = WriteConfig(configuration, configPath)
-	if err != nil {
-		return err
-	}
-	return nil
-}
