@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/SwayKh/linksym/pkg/config"
@@ -45,12 +46,12 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 		}
 
 	case 2:
-		destination, err := utils.GetFileInfo(args[1])
+		source, err := utils.GetFileInfo(args[0])
 		if err != nil {
 			return err
 		}
 
-		source, err := utils.GetFileInfo(args[0])
+		destination, err := utils.GetFileInfo(args[1])
 		if err != nil {
 			return err
 		}
@@ -77,6 +78,10 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 		// on trailling / provided with argument
 		case isSourceFile && !destination.Exists:
 			if destination.HasSlash {
+				err := os.MkdirAll(destinationPath, 0o755)
+				if err != nil {
+					return err
+				}
 				destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 			}
 
@@ -93,6 +98,10 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 		// to a File
 		case isSourceDir && !destination.Exists:
 			if destination.HasSlash {
+				err := os.MkdirAll(destinationPath, 0o755)
+				if err != nil {
+					return err
+				}
 				destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 			} else {
 				return fmt.Errorf("Can't link a Directory: %s to a File: %s", source.AbsPath, destination.AbsPath)
