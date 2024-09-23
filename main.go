@@ -80,6 +80,12 @@ func Run() error {
 			return fmt.Errorf("'source' subcommand doesn't accept any arguments.\nUsage: linksym source")
 		}
 		err = cmd.Source(configuration)
+	case "update":
+		if len(args) > 0 {
+			return fmt.Errorf("'update subcommand doesn't accept any arguments.\nUsage: linksym update")
+		}
+		err = cmd.Update(configuration)
+
 	default:
 		err = fmt.Errorf("Invalid Command. Please use -h or --help flags to see available commands.")
 	}
@@ -88,7 +94,6 @@ func Run() error {
 		return err
 	}
 
-	config.AliasConfig(configuration)
 	if err := config.WriteConfig(configuration, configName); err != nil {
 		return err
 	}
