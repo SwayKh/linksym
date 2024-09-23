@@ -94,7 +94,7 @@ func Run() error {
 		return err
 	}
 
-	if err := config.WriteConfig(configuration, configName); err != nil {
+	if err := config.WriteConfig(configuration); err != nil {
 		return err
 	}
 	return nil

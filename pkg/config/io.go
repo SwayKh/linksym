@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/SwayKh/linksym/pkg/global"
 	"github.com/SwayKh/linksym/pkg/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -42,14 +43,14 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 }
 
 // Write the Configuration struct data to .linksym.yaml file
-func WriteConfig(configuration *AppConfig, configPath string) error {
+func WriteConfig(configuration *AppConfig) error {
 	AliasConfig(configuration)
 	data, err := yaml.Marshal(configuration)
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
 	}
 
-	err = os.WriteFile(configPath, data, 0o644)
+	err = os.WriteFile(global.ConfigPath, data, 0o644)
 	if err != nil {
 		return fmt.Errorf("Error writing record to config file: %w", err)
 	}
@@ -71,9 +72,15 @@ func InitialiseConfig(configPath string) error {
 		Records:       []record{},
 	}
 
-	err = WriteConfig(&configuration, configPath)
+	AliasConfig(&configuration)
+	data, err := yaml.Marshal(configuration)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
+	}
+
+	err = os.WriteFile(configPath, data, 0o644)
+	if err != nil {
+		return fmt.Errorf("Error writing record to config file: %w", err)
 	}
 	return nil
 }
