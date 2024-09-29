@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/SwayKh/linksym/pkg/global"
 	"github.com/SwayKh/linksym/pkg/utils"
@@ -14,6 +15,8 @@ import (
 // it into the global Configuration variable, and return pointer to this struct
 func LoadConfig(configPath string) (*AppConfig, error) {
 	// Check if config file exists
+	fmt.Println("Checking if config file exists...")
+
 	config, err := utils.GetFileInfo(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("Error getting File Info of %s: %w", configPath, err)
@@ -23,7 +26,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 
 	file, err := os.Open(config.AbsPath)
 	if err != nil {
-		return nil, fmt.Errorf("Error opening config file: %s ", configPath)
+		return nil, fmt.Errorf("Error opening config file: %s ", filepath.Base(configPath))
 	}
 	defer file.Close()
 
@@ -32,11 +35,12 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 		return nil, fmt.Errorf("Error reading data from config file: %w", err)
 	}
 
+	fmt.Println("Getting data from config file...")
 	configuration := &AppConfig{}
 
 	err = yaml.Unmarshal(data, &configuration)
 	if err != nil {
-		return nil, fmt.Errorf("Error loading data to appConfig{}: %w", err)
+		return nil, fmt.Errorf("Error getting data from config file: %w", err)
 	}
 
 	return configuration, nil
@@ -49,6 +53,8 @@ func WriteConfig(configuration *AppConfig) error {
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
 	}
+
+	fmt.Println("Updating config file...")
 
 	err = os.WriteFile(global.ConfigPath, data, 0o644)
 	if err != nil {
@@ -82,5 +88,8 @@ func InitialiseConfig(configPath string) error {
 	if err != nil {
 		return fmt.Errorf("Error writing record to config file: %w", err)
 	}
+
+	fmt.Printf("Creating an empty %s file in the current directory.\n", filepath.Base(configPath))
+
 	return nil
 }

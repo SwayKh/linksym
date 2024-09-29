@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -10,6 +11,7 @@ import (
 // Loop over the configuration []Records, for each entry get the source and
 // destination paths. Run the Link command for each entry.
 func Source(configuration *config.AppConfig) error {
+	fmt.Println("Creating Symlinks from .linksym.yaml Records...")
 	for _, record := range configuration.Records {
 		sourcePath := record.Paths[0]
 		destinationPath := filepath.Dir(record.Paths[1])
