@@ -1,6 +1,6 @@
 package cmd
 
-import "fmt"
+import "github.com/SwayKh/linksym/pkg/logger"
 
 func Help() {
 	usage := ` Usage: linksym [subcommand] [flags]
@@ -25,5 +25,5 @@ Flags:
   -h, --help
     Display this help message.`
 
-	fmt.Println(usage)
+	logger.Log(usage)
 }

@@ -1,9 +1,9 @@
 package config
 
 import (
-	"fmt"
 	"path/filepath"
 
+	"github.com/SwayKh/linksym/pkg/logger"
 	"github.com/SwayKh/linksym/pkg/utils"
 )
 
@@ -20,7 +20,7 @@ type record struct {
 // Create a array of Path provided and a Link Name which is appended in the
 // Records of the global Configuration Struct
 func (c *AppConfig) AddRecord(sourcePath string, destinationPath string) {
-	fmt.Println("Adding record to .linksym.yaml...")
+	logger.VerboseLog("Adding record to .linksym.yaml...")
 	record := record{}
 
 	recordSlice := []string{}
@@ -40,7 +40,7 @@ func (c *AppConfig) AddRecord(sourcePath string, destinationPath string) {
 // Remove a Record of Link Name and Path array from the global configuration
 // struct, which is written to file at the end of program execution
 func (c *AppConfig) RemoveRecord(name string) {
-	fmt.Println("Removing record from .linksym.yaml...")
+	logger.VerboseLog("Removing record from .linksym.yaml...")
 	for i := len(c.Records) - 1; i >= 0; i-- {
 		if c.Records[i].Name == name {
 			c.Records = append(c.Records[:i], c.Records[i+1:]...)

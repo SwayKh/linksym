@@ -8,6 +8,7 @@ import (
 	"github.com/SwayKh/linksym/pkg/config"
 	"github.com/SwayKh/linksym/pkg/global"
 	"github.com/SwayKh/linksym/pkg/linker"
+	"github.com/SwayKh/linksym/pkg/logger"
 	"github.com/SwayKh/linksym/pkg/utils"
 )
 
@@ -33,13 +34,13 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 			return fmt.Errorf("File %s doesn't exist", source.AbsPath)
 		}
 
-		fmt.Println("Source path exists: ", utils.AliasPath(source.AbsPath, true))
+		logger.VerboseLog("Source path exists: %s\n", utils.AliasPath(source.AbsPath, true))
 
 		sourcePath := source.AbsPath
 		filename := filepath.Base(sourcePath)
 		destinationPath := filepath.Join(global.InitDirectory, filename)
 
-		fmt.Println("Destination path: ", utils.AliasPath(destinationPath, true))
+		logger.VerboseLog("Destination path: %s\n", utils.AliasPath(destinationPath, true))
 
 		err = linker.MoveAndLink(sourcePath, destinationPath, source.IsDir)
 		if err != nil {
@@ -70,8 +71,8 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 		sourcePath := source.AbsPath
 		destinationPath := destination.AbsPath
 
-		fmt.Println("Source path: ", utils.AliasPath(source.AbsPath, true))
-		fmt.Println("Destination path: ", utils.AliasPath(destination.AbsPath, true))
+		logger.VerboseLog("Source path: %s\n", utils.AliasPath(source.AbsPath, true))
+		logger.VerboseLog("Destination path: %s\n", utils.AliasPath(destination.AbsPath, true))
 
 		switch {
 		// Link Source File to inside of Destination directory
