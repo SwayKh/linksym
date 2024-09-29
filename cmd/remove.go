@@ -6,6 +6,7 @@ import (
 
 	"github.com/SwayKh/linksym/pkg/config"
 	"github.com/SwayKh/linksym/pkg/linker"
+	"github.com/SwayKh/linksym/pkg/logger"
 	"github.com/SwayKh/linksym/pkg/utils"
 )
 
@@ -27,6 +28,8 @@ func Remove(configuration *config.AppConfig, args []string) error {
 		} else if !link.Exists {
 			return fmt.Errorf("File %s doesn't exist", link.AbsPath)
 		}
+
+		logger.Log("Unlinking %s", utils.AliasPath(link.AbsPath, true))
 
 		// Since the "filename" of the record can be the same with a different file,
 		// just linked in separate directories, getting the filename and the above
