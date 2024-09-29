@@ -7,6 +7,7 @@ import (
 
 	"github.com/SwayKh/linksym/cmd"
 	"github.com/SwayKh/linksym/pkg/config"
+	"github.com/SwayKh/linksym/pkg/flags"
 	"github.com/SwayKh/linksym/pkg/logger"
 	"github.com/SwayKh/linksym/pkg/utils"
 )
@@ -20,7 +21,7 @@ func main() {
 
 // Load config, Setup up Global variables and handle all subcommand switching
 func Run() error {
-	cmd.CreateFlags()
+	flags.CreateFlags()
 	flag.Parse()
 
 	configName := ".linksym.yaml"
@@ -50,7 +51,7 @@ func Run() error {
 		return cmd.Init(configName)
 	}
 
-	if *cmd.HelpFlag {
+	if *flags.HelpFlag {
 		cmd.Help()
 		os.Exit(0)
 	}

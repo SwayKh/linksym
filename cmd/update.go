@@ -7,6 +7,7 @@ import (
 
 	"github.com/SwayKh/linksym/pkg/config"
 	"github.com/SwayKh/linksym/pkg/global"
+	"github.com/SwayKh/linksym/pkg/logger"
 	"github.com/SwayKh/linksym/pkg/utils"
 )
 
@@ -17,7 +18,7 @@ func Update(configuration *config.AppConfig) error {
 	// new InitDirectory
 	config.AliasConfig(configuration)
 
-	fmt.Println("Updating .linksym.yaml file...")
+	logger.VerboseLog("Updating .linksym.yaml file...")
 
 	InitDirectory, err := os.Getwd()
 	if err != nil {
