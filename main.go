@@ -7,12 +7,13 @@ import (
 
 	"github.com/SwayKh/linksym/cmd"
 	"github.com/SwayKh/linksym/pkg/config"
+	"github.com/SwayKh/linksym/pkg/logger"
 	"github.com/SwayKh/linksym/pkg/utils"
 )
 
 func main() {
 	if err := Run(); err != nil {
-		fmt.Printf("Error: %v\n", err)
+		logger.Log("Error: %v\n", err)
 		os.Exit(1)
 	}
 }
