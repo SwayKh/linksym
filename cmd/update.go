@@ -17,6 +17,8 @@ func Update(configuration *config.AppConfig) error {
 	// new InitDirectory
 	config.AliasConfig(configuration)
 
+	fmt.Println("Updating .linksym.yaml file...")
+
 	InitDirectory, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("Couldn't get the current working directory")
