@@ -6,12 +6,12 @@ import (
 	"github.com/SwayKh/linksym/pkg/flags"
 )
 
-func Log(msg string, args ...any) {
+func VerboseLog(msg string, args ...any) {
 	if *flags.VerboseFlag {
-		fmt.Printf(msg, args...)
+		fmt.Printf(msg+"\n", args...)
 	}
 }
 
-func VerboseLog(msg string, args ...any) {
-	fmt.Printf(msg, args...)
+func Log(msg string, args ...any) {
+	fmt.Printf(msg+"\n", args...)
 }

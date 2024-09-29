@@ -34,13 +34,13 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 			return fmt.Errorf("File %s doesn't exist", source.AbsPath)
 		}
 
-		logger.VerboseLog("Source path exists: %s\n", utils.AliasPath(source.AbsPath, true))
+		logger.VerboseLog("Source path exists: %s", utils.AliasPath(source.AbsPath, true))
 
 		sourcePath := source.AbsPath
 		filename := filepath.Base(sourcePath)
 		destinationPath := filepath.Join(global.InitDirectory, filename)
 
-		logger.VerboseLog("Destination path: %s\n", utils.AliasPath(destinationPath, true))
+		logger.VerboseLog("Destination path: %s", utils.AliasPath(destinationPath, true))
 
 		err = linker.MoveAndLink(sourcePath, destinationPath, source.IsDir)
 		if err != nil {
@@ -71,8 +71,8 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 		sourcePath := source.AbsPath
 		destinationPath := destination.AbsPath
 
-		logger.VerboseLog("Source path: %s\n", utils.AliasPath(source.AbsPath, true))
-		logger.VerboseLog("Destination path: %s\n", utils.AliasPath(destination.AbsPath, true))
+		logger.VerboseLog("Source path: %s", utils.AliasPath(source.AbsPath, true))
+		logger.VerboseLog("Destination path: %s", utils.AliasPath(destination.AbsPath, true))
 
 		switch {
 		// Link Source File to inside of Destination directory

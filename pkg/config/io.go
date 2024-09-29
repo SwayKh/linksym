@@ -90,7 +90,7 @@ func InitialiseConfig(configPath string) error {
 		return fmt.Errorf("Error writing record to config file: %w", err)
 	}
 
-	logger.Log("Creating an empty %s file in the current directory.\n", filepath.Base(configPath))
+	logger.Log("Creating an empty %s file in the current directory.", filepath.Base(configPath))
 
 	return nil
 }

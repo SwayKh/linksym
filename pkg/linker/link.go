@@ -35,7 +35,7 @@ func MoveAndLink(sourcePath, destinationPath string, isDirectory bool) error {
 
 // Create a symlink of source path at the destination path,
 func Link(sourcePath, destinationPath string) error {
-	logger.VerboseLog("Creating symlink...")
+	logger.Log("Creating symlink...")
 	err := os.Symlink(destinationPath, sourcePath)
 	if err != nil {
 		return fmt.Errorf("Couldn't create symlink %s: %w", destinationPath, err)
@@ -69,7 +69,7 @@ func UnLink(sourcePath, destinationPath string, isDirectory bool) error {
 // destination and then remove the source. This method allows better handling
 // when linking across file system than just renaming files
 func moveFile(source, destination string) error {
-	logger.Log("Moving: %s to %s\n", utils.AliasPath(source, true), utils.AliasPath(destination, true))
+	logger.Log("Moving: %s to %s", utils.AliasPath(source, true), utils.AliasPath(destination, true))
 	src, err := os.Open(source)
 	if err != nil {
 		return fmt.Errorf("Failed to open file: %s: %w", source, err)

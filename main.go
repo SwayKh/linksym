@@ -14,7 +14,7 @@ import (
 
 func main() {
 	if err := Run(); err != nil {
-		logger.Log("Error: %v\n", err)
+		logger.Log("Error: %v", err)
 		os.Exit(1)
 	}
 }
