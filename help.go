@@ -1,6 +1,4 @@
-package cmd
-
-import "github.com/SwayKh/linksym/pkg/logger"
+package main
 
 func Help() {
 	usage := ` Usage: linksym [flags] [subcommand]
@@ -27,5 +25,5 @@ Flags:
   -v
     Show verbose output.`
 
-	logger.Log(usage)
+	Log(usage)
 }

@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"fmt"
@@ -6,9 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/SwayKh/linksym/pkg/global"
-	"github.com/SwayKh/linksym/pkg/logger"
-	"github.com/SwayKh/linksym/pkg/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -16,9 +13,9 @@ import (
 // it into the global Configuration variable, and return pointer to this struct
 func LoadConfig(configPath string) (*AppConfig, error) {
 	// Check if config file exists
-	logger.VerboseLog("Checking if config file exists...")
+	VerboseLog("Checking if config file exists...")
 
-	config, err := utils.GetFileInfo(configPath)
+	config, err := GetFileInfo(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("Error getting File Info of %s: %w", configPath, err)
 	} else if !config.Exists {
@@ -36,7 +33,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 		return nil, fmt.Errorf("Error reading data from config file: %w", err)
 	}
 
-	logger.VerboseLog("Getting data from config file...")
+	VerboseLog("Getting data from config file...")
 	configuration := &AppConfig{}
 
 	err = yaml.Unmarshal(data, &configuration)
@@ -55,9 +52,9 @@ func WriteConfig(configuration *AppConfig) error {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
 	}
 
-	logger.VerboseLog("Updating config file...")
+	VerboseLog("Updating config file...")
 
-	err = os.WriteFile(global.ConfigPath, data, 0o644)
+	err = os.WriteFile(ConfigPath, data, 0o644)
 	if err != nil {
 		return fmt.Errorf("Error writing record to config file: %w", err)
 	}
@@ -72,7 +69,7 @@ func InitialiseConfig(configPath string) error {
 		return fmt.Errorf("Couldn't get the current working directory")
 	}
 
-	InitDirectory = utils.AliasPath(InitDirectory, true)
+	InitDirectory = AliasPath(InitDirectory, true)
 
 	configuration := AppConfig{
 		InitDirectory: InitDirectory,
@@ -90,7 +87,7 @@ func InitialiseConfig(configPath string) error {
 		return fmt.Errorf("Error writing record to config file: %w", err)
 	}
 
-	logger.Log("Creating an empty %s file in the current directory.", filepath.Base(configPath))
+	Log("Initialising %s file in the current directory.", filepath.Base(configPath))
 
 	return nil
 }

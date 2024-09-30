@@ -4,29 +4,36 @@ import (
 	"flag"
 	"fmt"
 	"os"
+)
 
-	"github.com/SwayKh/linksym/cmd"
-	"github.com/SwayKh/linksym/pkg/config"
-	"github.com/SwayKh/linksym/pkg/flags"
-	"github.com/SwayKh/linksym/pkg/logger"
-	"github.com/SwayKh/linksym/pkg/utils"
+type App struct {
+	Configuration *AppConfig
+	HomeDirectory string
+	InitDirectory string
+	ConfigPath    string
+}
+
+var (
+	HomeDirectory string
+	ConfigPath    string
+	InitDirectory string
 )
 
 func main() {
 	if err := Run(); err != nil {
-		logger.Log("Error: %v", err)
+		Log("Error: %v", err)
 		os.Exit(1)
 	}
 }
 
 // Load config, Setup up Global variables and handle all subcommand switching
 func Run() error {
-	flags.CreateFlags()
+	CreateFlags()
 	flag.Parse()
 
 	configName := ".linksym.yaml"
 
-	err := utils.InitialiseHomePath()
+	err := InitialiseHomePath()
 	if err != nil {
 		return err
 	}
@@ -34,7 +41,7 @@ func Run() error {
 	subcommand := flag.Arg(0)
 
 	if len(flag.Args()) < 1 {
-		cmd.Help()
+		Help()
 		os.Exit(1)
 	}
 
@@ -48,21 +55,21 @@ func Run() error {
 		if len(args) > 0 {
 			return fmt.Errorf("'init' subcommand doesn't accept any arguments.\nUsage: linksym init")
 		}
-		return cmd.Init(configName)
+		return Init(configName)
 	}
 
-	if *flags.HelpFlag {
-		cmd.Help()
+	if *HelpFlag {
+		Help()
 		os.Exit(0)
 	}
 
-	configuration, err := config.LoadConfig(configName)
+	configuration, err := LoadConfig(configName)
 	if err != nil {
 		return err
 	}
 
-	utils.SetupDirectories(configuration.InitDirectory, configName)
-	config.UnAliasConfig(configuration)
+	SetupDirectories(configuration.InitDirectory, configName)
+	UnAliasConfig(configuration)
 
 	switch subcommand {
 	case "init":
@@ -71,22 +78,22 @@ func Run() error {
 		if len(args) > 2 {
 			return fmt.Errorf("'add' subcommand doesn't accept more than 2 arguments.\nUsage: linksym add <source> <destination>")
 		}
-		err = cmd.Add(configuration, args, true)
+		err = Add(configuration, args, true)
 	case "remove":
 		if len(args) > 1 {
 			return fmt.Errorf("'remove' subcommand doesn't accept more than 1 argument.\nUsage: linksym remove <file name>")
 		}
-		err = cmd.Remove(configuration, args)
+		err = Remove(configuration, args)
 	case "source":
 		if len(args) > 0 {
 			return fmt.Errorf("'source' subcommand doesn't accept any arguments.\nUsage: linksym source")
 		}
-		err = cmd.Source(configuration)
+		err = Source(configuration)
 	case "update":
 		if len(args) > 0 {
 			return fmt.Errorf("'update subcommand doesn't accept any arguments.\nUsage: linksym update")
 		}
-		err = cmd.Update(configuration)
+		err = Update(configuration)
 
 	default:
 		err = fmt.Errorf("Invalid Command. Please use -h or --help flags to see available commands.")
@@ -96,7 +103,7 @@ func Run() error {
 		return err
 	}
 
-	if err := config.WriteConfig(configuration); err != nil {
+	if err := WriteConfig(configuration); err != nil {
 		return err
 	}
 	return nil

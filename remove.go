@@ -1,20 +1,15 @@
-package cmd
+package main
 
 import (
 	"fmt"
 	"path/filepath"
-
-	"github.com/SwayKh/linksym/pkg/config"
-	"github.com/SwayKh/linksym/pkg/linker"
-	"github.com/SwayKh/linksym/pkg/logger"
-	"github.com/SwayKh/linksym/pkg/utils"
 )
 
 // Get the absolute path of "LinkName", which should be the path relative from
 // the Init Directory, and Find the matching LinkName through the []Records in
 // .linksym.yaml, UnLink it, and Remove from the []Records. Expects one
 // argument, and throws error on multiple arguments provided
-func Remove(configuration *config.AppConfig, args []string) error {
+func Remove(configuration *AppConfig, args []string) error {
 	switch len(args) {
 	case 1:
 		var sourcePath, destinationPath string
@@ -22,14 +17,14 @@ func Remove(configuration *config.AppConfig, args []string) error {
 		var found bool
 
 		// Get the File Info of LinkName provided from the arguments
-		link, err := utils.GetFileInfo(args[0])
+		link, err := GetFileInfo(args[0])
 		if err != nil {
 			return err
 		} else if !link.Exists {
 			return fmt.Errorf("File %s doesn't exist", link.AbsPath)
 		}
 
-		logger.Log("Unlinking %s", utils.AliasPath(link.AbsPath, true))
+		Log("Unlinking %s", AliasPath(link.AbsPath, true))
 
 		// Since the "filename" of the record can be the same with a different file,
 		// just linked in separate directories, getting the filename and the above
@@ -50,10 +45,10 @@ func Remove(configuration *config.AppConfig, args []string) error {
 		}
 
 		if !found {
-			return fmt.Errorf("No record found for %s", utils.AliasPath(link.AbsPath, true))
+			return fmt.Errorf("No record found for %s", AliasPath(link.AbsPath, true))
 		}
 
-		err = linker.UnLink(sourcePath, destinationPath, link.IsDir)
+		err = UnLink(sourcePath, destinationPath, link.IsDir)
 		if err != nil {
 			return err
 		}
