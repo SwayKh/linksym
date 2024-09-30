@@ -1,13 +1,11 @@
-package logger
+package main
 
 import (
 	"fmt"
-
-	"github.com/SwayKh/linksym/pkg/flags"
 )
 
 func VerboseLog(msg string, args ...any) {
-	if *flags.VerboseFlag {
+	if *VerboseFlag {
 		fmt.Printf(msg+"\n", args...)
 	}
 }

@@ -1,15 +1,9 @@
-package cmd
+package main
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/SwayKh/linksym/pkg/config"
-	"github.com/SwayKh/linksym/pkg/global"
-	"github.com/SwayKh/linksym/pkg/linker"
-	"github.com/SwayKh/linksym/pkg/logger"
-	"github.com/SwayKh/linksym/pkg/utils"
 )
 
 // Add function, which handles the Add subcommand and handles all scenarios of
@@ -20,12 +14,12 @@ import (
 // files and directory, and handling the special scenario of a File/Dir which is
 // already moved by the user, and just needs to be linked, Skipping the move of
 // file step of the Linking process
-func Add(configuration *config.AppConfig, args []string, updateRecord bool) error {
+func Add(configuration *AppConfig, args []string, updateRecord bool) error {
 	toMove := true
 
 	switch len(args) {
 	case 1:
-		source, err := utils.GetFileInfo(args[0])
+		source, err := GetFileInfo(args[0])
 		if err != nil {
 			return err
 		}
@@ -34,15 +28,15 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 			return fmt.Errorf("File %s doesn't exist", source.AbsPath)
 		}
 
-		logger.VerboseLog("Source path exists: %s", utils.AliasPath(source.AbsPath, true))
+		VerboseLog("Source path exists: %s", AliasPath(source.AbsPath, true))
 
 		sourcePath := source.AbsPath
 		filename := filepath.Base(sourcePath)
-		destinationPath := filepath.Join(global.InitDirectory, filename)
+		destinationPath := filepath.Join(InitDirectory, filename)
 
-		logger.VerboseLog("Destination path: %s", utils.AliasPath(destinationPath, true))
+		VerboseLog("Destination path: %s", AliasPath(destinationPath, true))
 
-		err = linker.MoveAndLink(sourcePath, destinationPath, source.IsDir)
+		err = MoveAndLink(sourcePath, destinationPath, source.IsDir)
 		if err != nil {
 			return err
 		}
@@ -51,12 +45,12 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 		}
 
 	case 2:
-		source, err := utils.GetFileInfo(args[0])
+		source, err := GetFileInfo(args[0])
 		if err != nil {
 			return err
 		}
 
-		destination, err := utils.GetFileInfo(args[1])
+		destination, err := GetFileInfo(args[1])
 		if err != nil {
 			return err
 		}
@@ -71,8 +65,8 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 		sourcePath := source.AbsPath
 		destinationPath := destination.AbsPath
 
-		logger.VerboseLog("Source path: %s", utils.AliasPath(source.AbsPath, true))
-		logger.VerboseLog("Destination path: %s", utils.AliasPath(destination.AbsPath, true))
+		VerboseLog("Source path: %s", AliasPath(source.AbsPath, true))
+		VerboseLog("Destination path: %s", AliasPath(destination.AbsPath, true))
 
 		switch {
 		// Link Source File to inside of Destination directory
@@ -145,9 +139,9 @@ func Add(configuration *config.AppConfig, args []string, updateRecord bool) erro
 		}
 
 		if toMove {
-			err = linker.MoveAndLink(sourcePath, destinationPath, isSourceDir)
+			err = MoveAndLink(sourcePath, destinationPath, isSourceDir)
 		} else {
-			err = linker.Link(sourcePath, destinationPath)
+			err = Link(sourcePath, destinationPath)
 		}
 		if err != nil {
 			return err

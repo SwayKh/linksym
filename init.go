@@ -1,10 +1,8 @@
-package cmd
-
-import "github.com/SwayKh/linksym/pkg/config"
+package main
 
 // Initialise and empty config with cwd as init directory
 func Init(configName string) error {
-	err := config.InitialiseConfig(configName)
+	err := InitialiseConfig(configName)
 	if err != nil {
 		return err
 	}
