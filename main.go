@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/SwayKh/linksym/flags"
 )
 
 type App struct {
@@ -28,7 +30,7 @@ func main() {
 
 // Load config, Setup up Global variables and handle all subcommand switching
 func Run() error {
-	CreateFlags()
+	flags.CreateFlags()
 	flag.Parse()
 
 	configName := ".linksym.yaml"
@@ -58,7 +60,7 @@ func Run() error {
 		return Init(configName)
 	}
 
-	if *HelpFlag {
+	if *flags.HelpFlag {
 		Help()
 		os.Exit(0)
 	}
