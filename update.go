@@ -11,7 +11,7 @@ import (
 func Update(configuration *AppConfig) error {
 	// Alias config, to be allow expanding the $init_directory variable with the
 	// new InitDirectory
-	AliasConfig(configuration)
+	configuration.AliasConfig()
 
 	VerboseLog("Updating .linksym.yaml file...")
 

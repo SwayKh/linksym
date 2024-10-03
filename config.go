@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"path/filepath"
 )
 
@@ -46,7 +48,7 @@ func (c *AppConfig) RemoveRecord(name string) {
 }
 
 // Un-Alias all paths with ~ and $init_directory with full absolute paths
-func UnAliasConfig(configuration *AppConfig) {
+func (configuration *AppConfig) UnAliasConfig() {
 	configuration.InitDirectory = ExpandPath(configuration.InitDirectory)
 
 	for i, v := range configuration.Records {
@@ -57,7 +59,7 @@ func UnAliasConfig(configuration *AppConfig) {
 }
 
 // Alias all mentions of HomeDirectory and InitDirectory with ~ and $init_directory
-func AliasConfig(configuration *AppConfig) {
+func (configuration *AppConfig) AliasConfig() {
 	configuration.InitDirectory = AliasPath(configuration.InitDirectory, true)
 
 	// Alias path absolute paths before writing to config file

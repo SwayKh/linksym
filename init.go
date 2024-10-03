@@ -32,7 +32,7 @@ func InitialiseConfig(configPath string) error {
 		Records:       []record{},
 	}
 
-	AliasConfig(&configuration)
+	configuration.AliasConfig()
 	data, err := yaml.Marshal(configuration)
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
