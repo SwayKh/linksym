@@ -16,8 +16,8 @@ import (
 // file to cwd and link it.
 // Handling 2 arguments creates lots of different scenario of combination of
 // files and directory, and handling the special scenario of a File/Dir which is
-// already moved by the user, and just needs to be linked, Skipping the move of
-// file step of the Linking process
+// already moved by the user, and just needs to be linked, Skipping the moving
+// of file step of the Linking process
 func (app *Application) Add(args []string, updateRecord bool) error {
 	toMove := true
 

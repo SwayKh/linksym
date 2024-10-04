@@ -11,7 +11,7 @@ import (
 )
 
 // Load the configuration from .linksym.yaml configuration file and unmarshall
-// it into the global Configuration variable, and return pointer to this struct
+// it into the AppConfig struct, and return pointer to this struct
 func LoadConfig(configPath string) (*AppConfig, error) {
 	// Check if config file exists
 	logger.VerboseLog("Checking if config file exists...")

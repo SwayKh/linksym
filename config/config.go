@@ -38,8 +38,8 @@ func (c *AppConfig) AddRecord(sourcePath string, destinationPath string) {
 	c.Records = append(c.Records, record)
 }
 
-// Remove a Record of Link Name and Path array from the global configuration
-// struct, which is written to file at the end of program execution
+// Remove a Record of Link Name and Path array from the AppConfig struct, which
+// is written to file at the end of program execution
 func (c *AppConfig) RemoveRecord(name string) {
 	logger.VerboseLog("Removing record from .linksym.yaml...")
 	for i := len(c.Records) - 1; i >= 0; i-- {
@@ -49,35 +49,31 @@ func (c *AppConfig) RemoveRecord(name string) {
 	}
 }
 
-// Un-Alias all paths with ~ and $init_directory with full absolute paths
-func (configuration *AppConfig) UnAliasConfig(homeDir, initDir string) {
-	configuration.InitDirectory = ExpandPath(configuration.InitDirectory, homeDir, initDir)
-
-	for i, v := range configuration.Records {
-		for j := range v.Paths {
-			configuration.Records[i].Paths[j] = ExpandPath(configuration.Records[i].Paths[j], homeDir, initDir)
-		}
-	}
-}
-
-// Alias all mentions of HomeDirectory and InitDirectory with ~ and $init_directory
-func (configuration *AppConfig) AliasConfig(homeDir, initDir string) {
-	configuration.InitDirectory = AliasPath(configuration.InitDirectory, homeDir, initDir, true)
+func (c *AppConfig) AliasConfig(homeDir, initDir string) {
+	c.InitDirectory = AliasPath(c.InitDirectory, homeDir, initDir, true)
 
 	// Alias path absolute paths before writing to config file
-	for i, v := range configuration.Records {
+	for i, v := range c.Records {
 		for j := range v.Paths {
-			configuration.Records[i].Paths[j] = AliasPath(configuration.Records[i].Paths[j], homeDir, initDir, false)
+			c.Records[i].Paths[j] = AliasPath(c.Records[i].Paths[j], homeDir, initDir, false)
 		}
 	}
 }
 
-// Set the global HomeDirectory variable. Separated from SetupDirectories to be
-// used with the Init Subcommand.
+func (c *AppConfig) UnAliasConfig(homeDir, initDir string) {
+	c.InitDirectory = ExpandPath(c.InitDirectory, homeDir, initDir)
+
+	for i, v := range c.Records {
+		for j := range v.Paths {
+			c.Records[i].Paths[j] = ExpandPath(c.Records[i].Paths[j], homeDir, initDir)
+		}
+	}
+}
+
 func InitialiseHomePath() (string, error) {
-	HomeDirectory, err := os.UserHomeDir()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("Couldn't get the home directory")
 	}
-	return HomeDirectory, nil
+	return homeDir, nil
 }
