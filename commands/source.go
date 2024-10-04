@@ -1,15 +1,17 @@
-package main
+package commands
 
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/SwayKh/linksym/logger"
 )
 
 // Loop over the configuration []Records, for each entry get the source and
 // destination paths. Run the Link command for each entry.
-func Source(configuration *AppConfig) error {
-	VerboseLog("Creating Symlinks from .linksym.yaml Records...")
-	for _, record := range configuration.Records {
+func (app *Application) Source() error {
+	logger.VerboseLog("Creating Symlinks from .linksym.yaml Records...")
+	for _, record := range app.Configuration.Records {
 		sourcePath := record.Paths[0]
 		destinationPath := filepath.Dir(record.Paths[1])
 
@@ -20,7 +22,7 @@ func Source(configuration *AppConfig) error {
 
 		pathArgs := []string{sourcePath, destinationPath}
 
-		err = Add(configuration, pathArgs, false)
+		err = app.Add(pathArgs, false)
 		if err != nil {
 			return err
 		}

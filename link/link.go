@@ -1,10 +1,12 @@
-package main
+package link
 
 import (
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/SwayKh/linksym/logger"
 )
 
 // Move the source file to destination and creates a symlink at the source
@@ -32,7 +34,7 @@ func MoveAndLink(sourcePath, destinationPath string, isDirectory bool) error {
 
 // Create a symlink of source path at the destination path,
 func Link(sourcePath, destinationPath string) error {
-	Log("Creating symlink...")
+	logger.Log("Creating symlink...")
 	err := os.Symlink(destinationPath, sourcePath)
 	if err != nil {
 		return fmt.Errorf("Couldn't create symlink %s: %w", destinationPath, err)
@@ -66,7 +68,7 @@ func UnLink(sourcePath, destinationPath string, isDirectory bool) error {
 // destination and then remove the source. This method allows better handling
 // when linking across file system than just renaming files
 func moveFile(source, destination string) error {
-	Log("Moving: %s to %s", AliasPath(source, true), AliasPath(destination, true))
+	logger.Log("Moving: %s to %s", source, destination)
 	src, err := os.Open(source)
 	if err != nil {
 		return fmt.Errorf("Failed to open file: %s: %w", source, err)
