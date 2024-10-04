@@ -40,6 +40,11 @@ func (app *Application) Add(args []string, updateRecord bool) error {
 
 		logger.VerboseLog(logger.SUCCESS, "Destination path exists: %s", config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true))
 
+		aliasSourcePath := config.AliasPath(sourcePath, app.HomeDirectory, app.InitDirectory, true)
+		aliasDestinationPath := config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true)
+
+		logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
+
 		err = link.MoveAndLink(sourcePath, destinationPath, source.IsDir)
 		if err != nil {
 			return err
@@ -143,6 +148,11 @@ func (app *Application) Add(args []string, updateRecord bool) error {
 		}
 
 		if toMove {
+			aliasSourcePath := config.AliasPath(sourcePath, app.HomeDirectory, app.InitDirectory, true)
+			aliasDestinationPath := config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true)
+
+			logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
+
 			err = link.MoveAndLink(sourcePath, destinationPath, isSourceDir)
 		} else {
 			err = link.Link(sourcePath, destinationPath)

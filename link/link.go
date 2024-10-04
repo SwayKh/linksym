@@ -70,7 +70,6 @@ func UnLink(sourcePath, destinationPath string, isDirectory bool) error {
 // destination and then remove the source. This method allows better handling
 // when linking across file system than just renaming files
 func moveFile(source, destination string) error {
-	logger.Log(logger.INFO, "Moving: %s to %s", source, destination)
 	src, err := os.Open(source)
 	if err != nil {
 		return fmt.Errorf("Failed to open file: %s: %w", source, err)
