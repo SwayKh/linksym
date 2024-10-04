@@ -66,9 +66,6 @@ func (app *Application) Run() error {
 		}
 		err = app.Add(args, true)
 	case "remove":
-		if len(args) > 1 {
-			return fmt.Errorf("'remove' subcommand doesn't accept more than 1 argument.\nUsage: linksym remove <file name>")
-		}
 		err = app.Remove(args)
 	case "source":
 		if len(args) > 0 {

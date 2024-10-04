@@ -46,10 +46,15 @@ func (app *Application) Remove(args []string) error {
 			}
 		}
 
+		aliasLinkPath := config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true)
+		aliasSourcePath := config.AliasPath(sourcePath, app.HomeDirectory, app.InitDirectory, true)
+		aliasDestinationPath := config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true)
+
 		if !found {
-			return fmt.Errorf("No record found for %s", config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true))
+			return fmt.Errorf("No record found for %s", aliasLinkPath)
 		}
 
+		logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
 		err = link.UnLink(sourcePath, destinationPath, linkInfo.IsDir)
 		if err != nil {
 			return err
