@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/SwayKh/linksym/config"
 	"github.com/SwayKh/linksym/logger"
 )
 
@@ -100,7 +101,16 @@ func moveFile(source, destination string) error {
 
 // Delete the file at the given path
 func deleteFile(path string) error {
-	err := os.Remove(path)
+	file, err := config.GetFileInfo(path)
+	if err != nil {
+		return err
+	}
+
+	if !file.Exists {
+		return nil
+	}
+
+	err = os.Remove(path)
 	if err != nil {
 		if os.IsPermission(err) {
 			return fmt.Errorf("Failed to Remove file %s. Please run with elevated privileges", path)
