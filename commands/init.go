@@ -43,7 +43,7 @@ func initialiseConfig(configPath, homeDir string) error {
 		return fmt.Errorf("Error writing record to config file: %w", err)
 	}
 
-	logger.Log("Initialising %s file in the current directory.", filepath.Base(configPath))
+	logger.Log(logger.SUCCESS, "Initialising %s file in the current directory.", filepath.Base(configPath))
 
 	return nil
 }

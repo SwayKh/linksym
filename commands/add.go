@@ -32,13 +32,13 @@ func (app *Application) Add(args []string, updateRecord bool) error {
 			return fmt.Errorf("File %s doesn't exist", source.AbsPath)
 		}
 
-		logger.VerboseLog("Source path exists: %s", config.AliasPath(source.AbsPath, app.HomeDirectory, app.InitDirectory, true))
+		logger.VerboseLog(logger.SUCCESS, "Source path exists: %s", config.AliasPath(source.AbsPath, app.HomeDirectory, app.InitDirectory, true))
 
 		sourcePath := source.AbsPath
 		filename := filepath.Base(sourcePath)
 		destinationPath := filepath.Join(app.InitDirectory, filename)
 
-		logger.VerboseLog("Destination path: %s", config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true))
+		logger.VerboseLog(logger.SUCCESS, "Destination path exists: %s", config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true))
 
 		err = link.MoveAndLink(sourcePath, destinationPath, source.IsDir)
 		if err != nil {
@@ -69,8 +69,8 @@ func (app *Application) Add(args []string, updateRecord bool) error {
 		sourcePath := source.AbsPath
 		destinationPath := destination.AbsPath
 
-		logger.VerboseLog("Source path: %s", config.AliasPath(source.AbsPath, app.HomeDirectory, app.InitDirectory, true))
-		logger.VerboseLog("Destination path: %s", config.AliasPath(destination.AbsPath, app.HomeDirectory, app.InitDirectory, true))
+		logger.VerboseLog(logger.SUCCESS, "Source path: %s", config.AliasPath(source.AbsPath, app.HomeDirectory, app.InitDirectory, true))
+		logger.VerboseLog(logger.SUCCESS, "Destination path: %s", config.AliasPath(destination.AbsPath, app.HomeDirectory, app.InitDirectory, true))
 
 		switch {
 		// Link Source File to inside of Destination directory

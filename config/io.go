@@ -14,7 +14,7 @@ import (
 // it into the AppConfig struct, and return pointer to this struct
 func LoadConfig(configPath string) (*AppConfig, error) {
 	// Check if config file exists
-	logger.VerboseLog("Checking if config file exists...")
+	logger.VerboseLog(logger.INFO, "Checking if config file exists...")
 
 	config, err := GetFileInfo(configPath)
 	if err != nil {
@@ -34,7 +34,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 		return nil, fmt.Errorf("Error reading data from config file: %w", err)
 	}
 
-	logger.VerboseLog("Getting data from config file...")
+	logger.VerboseLog(logger.INFO, "Getting data from config file...")
 	configuration := &AppConfig{}
 
 	err = yaml.Unmarshal(data, &configuration)
@@ -53,7 +53,7 @@ func (configuration *AppConfig) WriteConfig(homeDir, initDir, configPath string)
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
 	}
 
-	logger.VerboseLog("Updating config file...")
+	logger.VerboseLog(logger.SUCCESS, "Updating config file...")
 
 	err = os.WriteFile(configPath, data, 0o644)
 	if err != nil {
