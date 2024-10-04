@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/SwayKh/linksym/logger"
 	"gopkg.in/yaml.v3"
 )
 
@@ -13,7 +14,7 @@ import (
 // it into the global Configuration variable, and return pointer to this struct
 func LoadConfig(configPath string) (*AppConfig, error) {
 	// Check if config file exists
-	VerboseLog("Checking if config file exists...")
+	logger.VerboseLog("Checking if config file exists...")
 
 	config, err := GetFileInfo(configPath)
 	if err != nil {
@@ -33,7 +34,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 		return nil, fmt.Errorf("Error reading data from config file: %w", err)
 	}
 
-	VerboseLog("Getting data from config file...")
+	logger.VerboseLog("Getting data from config file...")
 	configuration := &AppConfig{}
 
 	err = yaml.Unmarshal(data, &configuration)
@@ -45,16 +46,16 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 }
 
 // Write the Configuration struct data to .linksym.yaml file
-func WriteConfig(configuration *AppConfig) error {
-	configuration.AliasConfig()
+func (configuration *AppConfig) WriteConfig(homeDir, initDir, configPath string) error {
+	configuration.AliasConfig(homeDir, initDir)
 	data, err := yaml.Marshal(configuration)
 	if err != nil {
 		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
 	}
 
-	VerboseLog("Updating config file...")
+	logger.VerboseLog("Updating config file...")
 
-	err = os.WriteFile(ConfigPath, data, 0o644)
+	err = os.WriteFile(configPath, data, 0o644)
 	if err != nil {
 		return fmt.Errorf("Error writing record to config file: %w", err)
 	}

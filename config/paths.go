@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"errors"
@@ -50,26 +50,26 @@ func GetFileInfo(path string) (fileInfo, error) {
 }
 
 // Expand the ~ and $init_directory variables to their respective values
-func ExpandPath(path string) string {
+func ExpandPath(path, homeDir, initDir string) string {
 	// the $init_directory strings comes from the yaml tags for AppConfig
 	if strings.HasPrefix(path, "$init_directory") {
-		path = strings.Replace(path, "$init_directory", InitDirectory, 1)
+		path = strings.Replace(path, "$init_directory", initDir, 1)
 	}
 	if strings.HasPrefix(path, "~") {
-		path = strings.Replace(path, "~", HomeDirectory, 1)
+		path = strings.Replace(path, "~", homeDir, 1)
 	}
 	return path
 }
 
 // Create aliases of ~ and $init_directory to make the paths and the
 // configurations more portable
-func AliasPath(path string, skipInitDir bool) string {
+func AliasPath(path, homeDir, initDir string, skipInitDir bool) string {
 	// the $init_directory strings comes from the yaml tags for AppConfig
-	if !skipInitDir && strings.HasPrefix(path, InitDirectory) {
-		path = strings.Replace(path, InitDirectory, "$init_directory", 1)
+	if !skipInitDir && strings.HasPrefix(path, initDir) {
+		path = strings.Replace(path, initDir, "$init_directory", 1)
 	}
-	if strings.HasPrefix(path, HomeDirectory) {
-		path = strings.Replace(path, HomeDirectory, "~", 1)
+	if strings.HasPrefix(path, homeDir) {
+		path = strings.Replace(path, homeDir, "~", 1)
 	}
 
 	return path

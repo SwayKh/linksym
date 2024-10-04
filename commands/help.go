@@ -1,4 +1,6 @@
-package main
+package commands
+
+import "github.com/SwayKh/linksym/logger"
 
 func Help() {
 	usage := ` USAGE:
@@ -27,5 +29,5 @@ AVAILABLE COMMANDS:
     Update the .linksym.yaml configuration file in the current directory.
 `
 
-	Log(usage)
+	logger.Log(usage)
 }
