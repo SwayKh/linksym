@@ -40,12 +40,15 @@ func (app *Application) Add(args []string, updateRecord bool) error {
 
 		logger.VerboseLog(logger.SUCCESS, "Destination path exists: %s", config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true))
 
-		aliasSourcePath := config.AliasPath(sourcePath, app.HomeDirectory, app.InitDirectory, true)
-		aliasDestinationPath := config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true)
+		paths := link.LinkPaths{
+			SourcePath:      sourcePath,
+			DestinationPath: destinationPath,
+			HomeDir:         app.HomeDirectory,
+			InitDir:         app.InitDirectory,
+			IsDirectory:     source.IsDir,
+		}
 
-		logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
-
-		err = link.MoveAndLink(sourcePath, destinationPath, source.IsDir)
+		err = paths.MoveAndLink()
 		if err != nil {
 			return err
 		}
@@ -147,15 +150,18 @@ func (app *Application) Add(args []string, updateRecord bool) error {
 			return fmt.Errorf("Invalid arguments provided")
 		}
 
+		paths := link.LinkPaths{
+			SourcePath:      sourcePath,
+			DestinationPath: destinationPath,
+			HomeDir:         app.HomeDirectory,
+			InitDir:         app.InitDirectory,
+			IsDirectory:     source.IsDir,
+		}
+
 		if toMove {
-			aliasSourcePath := config.AliasPath(sourcePath, app.HomeDirectory, app.InitDirectory, true)
-			aliasDestinationPath := config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true)
-
-			logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
-
-			err = link.MoveAndLink(sourcePath, destinationPath, isSourceDir)
+			err = paths.MoveAndLink()
 		} else {
-			err = link.Link(sourcePath, destinationPath)
+			err = paths.Link()
 		}
 		if err != nil {
 			return err
