@@ -27,7 +27,7 @@ func (app *Application) Remove(args []string) error {
 			return fmt.Errorf("File %s doesn't exist", linkInfo.AbsPath)
 		}
 
-		logger.Log("Unlinking %s", config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true))
+		logger.Log(logger.WARNING, "Unlinking %s", config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true))
 
 		// Since the "filename" of the record can be the same with a different file,
 		// just linked in separate directories, getting the filename and the parent

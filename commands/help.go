@@ -29,5 +29,5 @@ AVAILABLE COMMANDS:
     Update the .linksym.yaml configuration file in the current directory.
 `
 
-	logger.Log(usage)
+	logger.Log(logger.WARNING, usage)
 }

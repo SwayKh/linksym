@@ -10,7 +10,7 @@ import (
 // Loop over the configuration []Records, for each entry get the source and
 // destination paths. Run the Link command for each entry.
 func (app *Application) Source() error {
-	logger.VerboseLog("Creating Symlinks from .linksym.yaml Records...")
+	logger.VerboseLog(logger.INFO, "Creating Symlinks from .linksym.yaml Records...")
 	for _, record := range app.Configuration.Records {
 		sourcePath := record.Paths[0]
 		destinationPath := filepath.Dir(record.Paths[1])
@@ -27,5 +27,6 @@ func (app *Application) Source() error {
 			return err
 		}
 	}
+	logger.Log(logger.SUCCESS, "Success")
 	return nil
 }

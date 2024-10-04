@@ -16,7 +16,7 @@ func (app *Application) Update() error {
 	// new InitDirectory
 	app.Configuration.AliasConfig(app.HomeDirectory, app.InitDirectory)
 
-	logger.Log("Updating .linksym.yaml file...")
+	logger.Log(logger.INFO, "Updating .linksym.yaml file...")
 
 	InitDirectory, err := os.Getwd()
 	if err != nil {
@@ -35,6 +35,8 @@ func (app *Application) Update() error {
 		app.Configuration.Records[i].Name = filepath.Join(dirname, filename)
 
 	}
+
+	logger.Log(logger.SUCCESS, "Successfully updates Init Directory and Record names")
 
 	err = app.Configuration.WriteConfig(app.HomeDirectory, app.InitDirectory, app.ConfigPath)
 	if err != nil {

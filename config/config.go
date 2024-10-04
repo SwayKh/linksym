@@ -21,7 +21,6 @@ type record struct {
 // Create a array of Path provided and a Link Name which is appended in the
 // Records of the global Configuration Struct
 func (c *AppConfig) AddRecord(sourcePath string, destinationPath string) {
-	logger.VerboseLog("Adding record to .linksym.yaml...")
 	record := record{}
 
 	recordSlice := []string{}
@@ -36,17 +35,20 @@ func (c *AppConfig) AddRecord(sourcePath string, destinationPath string) {
 	record.Paths = recordSlice
 
 	c.Records = append(c.Records, record)
+
+	logger.VerboseLog(logger.INFO, "Adding record to .linksym.yaml...")
 }
 
 // Remove a Record of Link Name and Path array from the AppConfig struct, which
 // is written to file at the end of program execution
 func (c *AppConfig) RemoveRecord(name string) {
-	logger.VerboseLog("Removing record from .linksym.yaml...")
 	for i := len(c.Records) - 1; i >= 0; i-- {
 		if c.Records[i].Name == name {
 			c.Records = append(c.Records[:i], c.Records[i+1:]...)
 		}
 	}
+
+	logger.VerboseLog(logger.INFO, "Removing record from .linksym.yaml...")
 }
 
 func (c *AppConfig) AliasConfig(homeDir, initDir string) {
