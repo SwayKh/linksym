@@ -28,7 +28,7 @@ func Help() {
 	boldWhite("  record [path] [destination (Optional) ]")
 	white("    Creates a record of symlink in .linksym.yaml, which actually creating symlink.")
 	white()
-	boldWhite("  remove [paths]")
+	boldWhite("  remove [path(s)...]")
 	white("    Remove the symlink and restore the original file to its original path.")
 	white()
 	boldWhite("  source")
