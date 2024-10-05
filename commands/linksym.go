@@ -62,11 +62,16 @@ func (app *Application) Run() error {
 		break
 	case "add":
 		if len(args) > 2 {
-			return fmt.Errorf("'add' subcommand doesn't accept more than 2 arguments.\nUsage: linksym add <source> <destination>")
+			return fmt.Errorf("'add' subcommand doesn't accept more than 2 arguments.\nUsage: linksym add <source> <destination (optional)>")
 		}
-		err = app.Add(args, true)
+		err = app.Add(args, true, true)
 	case "remove":
 		err = app.Remove(args)
+	case "record":
+		if len(args) > 2 {
+			return fmt.Errorf("'record' subcommand doesn't accept more than 2 arguments.\nUsage: linksym record <source> <destination (optional)>")
+		}
+		err = app.Add(args, false, true)
 	case "source":
 		if len(args) > 0 {
 			return fmt.Errorf("'source' subcommand doesn't accept any arguments.\nUsage: linksym source")
