@@ -63,9 +63,9 @@ func ExpandPath(path, homeDir, initDir string) string {
 
 // Create aliases of ~ and $init_directory to make the paths and the
 // configurations more portable
-func AliasPath(path, homeDir, initDir string, skipInitDir bool) string {
+func AliasPath(path, homeDir, initDir string, aliasToHome bool) string {
 	// the $init_directory strings comes from the yaml tags for AppConfig
-	if !skipInitDir && strings.HasPrefix(path, initDir) {
+	if !aliasToHome && strings.HasPrefix(path, initDir) {
 		path = strings.Replace(path, initDir, "$init_directory", 1)
 	}
 	if strings.HasPrefix(path, homeDir) {

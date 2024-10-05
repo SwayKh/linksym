@@ -12,15 +12,16 @@ import (
 
 // Add function, which handles the Add subcommand and handles all scenarios of
 // file paths provided.
-// Handling one argument is simple enough, just Move the
-// file to cwd and link it.
-// Handling 2 arguments creates lots of different scenario of combination of
-// files and directory, and handling the special scenario of a File/Dir which is
-// already moved by the user, and just needs to be linked, Skipping the moving
-// of file step of the Linking process
-// toLink boolean decided where to perform the Move/Link action or just add
+// Handling one argument is simple enough. But, handling 2 arguments creates
+// lots of different scenario of combination of files and directory, and
+// handling the special scenario of a File/Dir which is already moved by the
+// user, and just needs to be linked, Skipping the moving of file step of the
+// Linking process
+// toLink boolean decided whether to perform the Move/Link action or just add
 // record of "linking" to the .linksym.yaml file. Useful for when a symlink
 // already exists, but they record of it doesn't
+// updateRecord bool is used for running the Add function in source subcommand
+// since the Source command doesn't need to update the Records, just Link stuff
 func (app *Application) Add(args []string, toLink bool, updateRecord bool) error {
 	toMove := true
 
