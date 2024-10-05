@@ -38,6 +38,7 @@ func (app *Application) Update() error {
 
 	logger.Log(logger.SUCCESS, "Successfully updates Init Directory and Record names")
 
+	app.Configuration.AliasConfig(app.HomeDirectory, app.InitDirectory)
 	err = app.Configuration.WriteConfig(app.HomeDirectory, app.InitDirectory, app.ConfigPath)
 	if err != nil {
 		return nil
