@@ -92,6 +92,7 @@ func (app *Application) Run() error {
 		return err
 	}
 
+	app.Configuration.AliasConfig(app.HomeDirectory, app.InitDirectory)
 	if err := app.Configuration.WriteConfig(app.HomeDirectory, app.InitDirectory, app.ConfigPath); err != nil {
 		return err
 	}

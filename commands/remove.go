@@ -64,6 +64,14 @@ func (app *Application) Remove(args []string) error {
 		}
 
 		app.Configuration.RemoveRecord(recordPathName)
+
+		// Save the config after removing each records, since if out of multiple
+		// arguments provided and one of them is not present in the records or
+		// returns some argument, the .linksym.yaml won't be saved with the removed
+		// records that were removed.
+		if err := app.Configuration.WriteConfig(app.HomeDirectory, app.InitDirectory, app.ConfigPath); err != nil {
+			return err
+		}
 	}
 	return nil
 }
