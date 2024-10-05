@@ -18,7 +18,10 @@ import (
 // files and directory, and handling the special scenario of a File/Dir which is
 // already moved by the user, and just needs to be linked, Skipping the moving
 // of file step of the Linking process
-func (app *Application) Add(args []string, updateRecord bool) error {
+// toLink boolean decided where to perform the Move/Link action or just add
+// record of "linking" to the .linksym.yaml file. Useful for when a symlink
+// already exists, but they record of it doesn't
+func (app *Application) Add(args []string, toLink bool, updateRecord bool) error {
 	toMove := true
 
 	switch len(args) {
@@ -48,9 +51,11 @@ func (app *Application) Add(args []string, updateRecord bool) error {
 			IsDirectory:     source.IsDir,
 		}
 
-		err = paths.MoveAndLink()
-		if err != nil {
-			return err
+		if toLink {
+			err = paths.MoveAndLink()
+			if err != nil {
+				return err
+			}
 		}
 		if updateRecord {
 			app.Configuration.AddRecord(sourcePath, destinationPath)
@@ -158,13 +163,15 @@ func (app *Application) Add(args []string, updateRecord bool) error {
 			IsDirectory:     source.IsDir,
 		}
 
-		if toMove {
-			err = paths.MoveAndLink()
-		} else {
-			err = paths.Link()
-		}
-		if err != nil {
-			return err
+		if toLink {
+			if toMove {
+				err = paths.MoveAndLink()
+			} else {
+				err = paths.Link()
+			}
+			if err != nil {
+				return err
+			}
 		}
 		if updateRecord {
 			app.Configuration.AddRecord(sourcePath, destinationPath)

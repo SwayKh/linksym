@@ -22,7 +22,7 @@ func (app *Application) Source() error {
 
 		pathArgs := []string{sourcePath, destinationPath}
 
-		err = app.Add(pathArgs, false)
+		err = app.Add(pathArgs, true, false)
 		if err != nil {
 			return err
 		}
