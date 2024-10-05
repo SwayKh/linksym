@@ -1,11 +1,9 @@
-# Linksym
+# Linksym - A Symlink-ing tool
 
-`linksym` is a tool which acts as a wrapper around `ln` for creating symbolic
-links (symlinks) and creating a record of those symlinks in a configuration
-file, allowing to easily recreate those symlinks later from a single file using
-a simple command.
-
-This project was mainly made for dotfiles management
+`linksym` is a dotfiles management tool which acts as a wrapper around `ln` for
+creating symbolic links (symlinks) and creating a record of those symlinks in a
+configuration file, allowing to easily recreate those symlinks later from a
+single file using a simple command.
 
 ## Features
 
@@ -55,17 +53,17 @@ run before any other command.
 #### Add
 
 ```
-$ linksym add [path-to-file/dir] [destination-path(optional)]
+$ linksym add [target] [destination (optional)]
 ```
 
-Moves the file from `source-path` to `destination-path` (Or the current
+Moves the file from `target-path` to `destination-path` (Or the current
 directory if no destination path is provided) and creates a symlinks at source
 pointing to destination. And records it in `.linksym.yaml`.
 
 #### Record
 
 ```
-$ linksym record [path-to-file/dir] [destination-path(optional)]
+$ linksym record [target] [destination (optional)]
 ```
 
 Separate command to add a symlink record to `.linksym.yaml` file. Skips the
@@ -75,11 +73,11 @@ of symlink paths that are already present on the system.
 #### Remove
 
 ```
-$ linksym remove [path(s)...]
+$ linksym remove [target(s)...]
 ```
 
-Removes the symlink and restores the original file to its original path and
-remove the record from `.linksym.yaml`.
+Removes the symlink and restores the target file or directory to its original
+path and remove the record from `.linksym.yaml`.
 
 #### Update
 
@@ -88,7 +86,7 @@ $ linksym update
 ```
 
 Updates the `.linksym.yaml` file in the current directory. This updates the Init
-directory in `.linksym.yaml` file with the current directory. and updates the
+directory field in `.linksym.yaml` file with the current directory. and updates the
 `record name` fields appropriately.
 
 #### Source
@@ -119,13 +117,13 @@ AVAILABLE COMMANDS:
   init
     Initialize the linksym configuration file (.linksym.yaml) to hold records of symlinks.
 
-  add [path] [destination (Optional) ]
+  add [target] [destination (Optional)]
     Create a symlink for the specified path. Optionally takes a destination path for the symlink.
 
-  record [path] [destination (Optional) ]
+  record [target] [destination (Optional)]
     Creates a record of symlink in .linksym.yaml, which actually creating symlink.
 
-  remove [path(s)...]
+  remove [target(s)...]
     Remove the symlink and restore the original file to its original path.
 
   source
