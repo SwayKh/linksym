@@ -3,7 +3,6 @@ package commands
 import (
 	"flag"
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/SwayKh/linksym/config"
@@ -24,12 +23,12 @@ func (app *Application) Run() error {
 
 	if len(flag.Args()) < 1 {
 		Help()
-		os.Exit(1)
+		return nil
 	}
 
 	if *flags.HelpFlag {
 		Help()
-		os.Exit(0)
+		return nil
 	}
 
 	subcommand := flag.Arg(0)
@@ -58,25 +57,27 @@ func (app *Application) Run() error {
 	app.Configuration.UnAliasConfig(app.HomeDirectory, app.InitDirectory)
 
 	switch subcommand {
-	case "init":
-		break
 	case "add":
 		if len(args) > 2 {
 			return fmt.Errorf("'add' subcommand doesn't accept more than 2 arguments.\nUsage: linksym add <source> <destination (optional)>")
 		}
 		err = app.Add(args, true, true)
+
 	case "remove":
 		err = app.Remove(args)
+
 	case "record":
 		if len(args) > 2 {
 			return fmt.Errorf("'record' subcommand doesn't accept more than 2 arguments.\nUsage: linksym record <source> <destination (optional)>")
 		}
 		err = app.Add(args, false, true)
+
 	case "source":
 		if len(args) > 0 {
 			return fmt.Errorf("'source' subcommand doesn't accept any arguments.\nUsage: linksym source")
 		}
 		err = app.Source()
+
 	case "update":
 		if len(args) > 0 {
 			return fmt.Errorf("'update subcommand doesn't accept any arguments.\nUsage: linksym update")
@@ -94,5 +95,6 @@ func (app *Application) Run() error {
 	if err := app.Configuration.WriteConfig(app.HomeDirectory, app.InitDirectory, app.ConfigPath); err != nil {
 		return err
 	}
+
 	return nil
 }
