@@ -36,7 +36,7 @@ func (c *AppConfig) AddRecord(sourcePath string, destinationPath string) {
 
 	c.Records = append(c.Records, record)
 
-	logger.VerboseLog(logger.INFO, "Adding record to .linksym.yaml...")
+	logger.Log(logger.INFO, "Adding record to .linksym.yaml...")
 }
 
 // Remove a Record of Link Name and Path array from the AppConfig struct, which
@@ -48,7 +48,7 @@ func (c *AppConfig) RemoveRecord(name string) {
 		}
 	}
 
-	logger.VerboseLog(logger.INFO, "Removing record from .linksym.yaml...")
+	logger.Log(logger.INFO, "Removing record from .linksym.yaml...")
 }
 
 func (c *AppConfig) AliasConfig(homeDir, initDir string) {

@@ -81,7 +81,7 @@ func moveFile(source, destination, homeDir, initDir string) error {
 	aliasSourcePath := config.AliasPath(source, homeDir, initDir, true)
 	aliasDestinationPath := config.AliasPath(destination, homeDir, initDir, true)
 
-	logger.Log(logger.INFO, "Moving: %s to %s\n", aliasSourcePath, aliasDestinationPath)
+	logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
 
 	src, err := os.Open(source)
 	if err != nil {
