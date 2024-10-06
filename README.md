@@ -15,17 +15,7 @@ single file using a simple command.
 
 Make sure you have `go` installed on your system.
 
-Clone this repository and build the project
-
-```bash
-git clone https://github.com/SwayKh/linksym.git
-cd linksym
-go build
-```
-
-Move this `linksym` binary to your `$PATH` or anywhere in your system.
-
-Or install it directly using `go`
+Install it directly using `go`
 
 ```bash
 go install github.com/SwayKh/linksym@latest
