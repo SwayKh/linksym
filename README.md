@@ -123,6 +123,10 @@ AVAILABLE COMMANDS:
     Update the .linksym.yaml configuration file in the current directory.
 ```
 
+> [!WARNING]
+> Using the source command to create symlinks will overwrite any existing
+> Directory or File at the Source path where the symlink will be made
+
 ## Motivation
 
 I know that there are quite a few tools out there for managing dotfiles. Like

@@ -21,20 +21,31 @@ type LinkPaths struct {
 // Move the source file to destination and creates a symlink at the source
 // pointing towards the destination path
 func (paths LinkPaths) MoveAndLink() error {
+	var err error
+	aliasSourcePath := config.AliasPath(paths.SourcePath, paths.HomeDir, paths.InitDir, true)
+	aliasDestinationPath := config.AliasPath(paths.DestinationPath, paths.HomeDir, paths.InitDir, true)
+
 	// If path is a directory, Rename it
 	if paths.IsDirectory {
-		err := os.Rename(paths.SourcePath, paths.DestinationPath)
+		// Delete destination, if it exists
+		err = deleteFile(paths.DestinationPath)
 		if err != nil {
-			return fmt.Errorf("Couldn't link directory %s to %s: %w", paths.SourcePath, paths.DestinationPath, err)
+			return err
 		}
+
+		err = os.Rename(paths.SourcePath, paths.DestinationPath)
+		if err != nil {
+			return fmt.Errorf("Couldn't link directory %s to %s: %w", aliasSourcePath, aliasDestinationPath, err)
+		}
+		logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
 	} else {
-		err := moveFile(paths.SourcePath, paths.DestinationPath, paths.HomeDir, paths.InitDir)
+		err = moveFile(paths.SourcePath, paths.DestinationPath, paths.HomeDir, paths.InitDir)
 		if err != nil {
 			return err
 		}
 	}
 
-	err := paths.Link()
+	err = paths.Link()
 	if err != nil {
 		return err
 	}
@@ -43,9 +54,11 @@ func (paths LinkPaths) MoveAndLink() error {
 
 // Create a symlink of source path at the destination path,
 func (paths LinkPaths) Link() error {
+	aliasDestinationPath := config.AliasPath(paths.DestinationPath, paths.HomeDir, paths.InitDir, true)
+
 	err := os.Symlink(paths.DestinationPath, paths.SourcePath)
 	if err != nil {
-		return fmt.Errorf("Couldn't create symlink %s: %w", paths.DestinationPath, err)
+		return fmt.Errorf("Couldn't create symlink %s: %w", aliasDestinationPath, err)
 	}
 
 	logger.Log(logger.SUCCESS, "Creating symlink...")
@@ -55,6 +68,10 @@ func (paths LinkPaths) Link() error {
 // Remove the symlink file at the source, move the destination file to the
 // original source path. Basically undo-ing the MoveAndLink function
 func (paths LinkPaths) UnLink() error {
+	aliasSourcePath := config.AliasPath(paths.SourcePath, paths.HomeDir, paths.InitDir, true)
+	aliasDestinationPath := config.AliasPath(paths.DestinationPath, paths.HomeDir, paths.InitDir, true)
+
+	// Delete destination, if it exists
 	err := deleteFile(paths.SourcePath)
 	if err != nil {
 		return err
@@ -63,8 +80,9 @@ func (paths LinkPaths) UnLink() error {
 	if paths.IsDirectory {
 		err := os.Rename(paths.DestinationPath, paths.SourcePath)
 		if err != nil {
-			return fmt.Errorf("Couldn't move directory %s to %s: %w", paths.SourcePath, paths.DestinationPath, err)
+			return fmt.Errorf("Couldn't move directory %s to %s: %w", aliasSourcePath, aliasDestinationPath, err)
 		}
+		logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
 	} else {
 		err := moveFile(paths.DestinationPath, paths.SourcePath, paths.HomeDir, paths.InitDir)
 		if err != nil {
@@ -123,7 +141,7 @@ func deleteFile(path string) error {
 		return nil
 	}
 
-	err = os.Remove(path)
+	err = os.RemoveAll(path)
 	if err != nil {
 		if os.IsPermission(err) {
 			return fmt.Errorf("Failed to Remove file %s. Please run with elevated privileges", path)
