@@ -29,10 +29,8 @@ $ rm -f $(which linksym)
 
 ## Usage
 
-#### Init
-
 ```
-$ linksym init
+linksym init
 ```
 
 Creates a `.linksym.yaml` file in the current directory This file acts as a
@@ -40,54 +38,54 @@ database for storing record of symlinks. All other commands require for the
 `.linksym.yaml` file to be present and hence this command is required to be
 run before any other command.
 
-#### Add
-
 ```
-$ linksym add [target] [destination (optional)]
+linksym add [target] [destination (optional)]
 ```
 
 Moves the file from `target-path` to `destination-path` (Or the current
 directory if no destination path is provided) and creates a symlinks at source
 pointing to destination. And records it in `.linksym.yaml`.
 
-#### Record
+> [!NOTE]
+> the `linksym add` command can also be used in a way similar to `ln` where if
+> the target directory or file is already moved to the destination, running
+> `linksym add [symlink location] [target path]` will create a symlink there
+> anyway.
 
 ```
-$ linksym record [target] [destination (optional)]
+linksym record [target] [destination (optional)]
 ```
 
 Separate command to add a symlink record to `.linksym.yaml` file. Skips the
 Moving and symlinking step of the `add` subcommand. Useful for creating a record
 of symlink paths that are already present on the system.
 
-#### Remove
-
 ```
-$ linksym remove [target(s)...]
+linksym remove [target(s)...]
 ```
 
 Removes the symlink and restores the target file or directory to its original
 path and remove the record from `.linksym.yaml`.
 
-#### Update
-
 ```
-$ linksym update
+linksym update
 ```
 
 Updates the `.linksym.yaml` file in the current directory. This updates the Init
 directory field in `.linksym.yaml` file with the current directory. and updates the
 `record name` fields appropriately.
 
-#### Source
-
 ```
-$ linksym source
+linksym source
 ```
 
 Reads the `.linksym.yaml` file in the current directory and creates symlinks for
 each record. Useful for replicating recorded symlinks on a different
 system or machine.
+
+> [!WARNING]
+> Using the source command to create symlinks will overwrite any existing
+> Directory or File at the Source path where the symlink will be made
 
 #### Help
 
@@ -123,15 +121,11 @@ AVAILABLE COMMANDS:
     Update the .linksym.yaml configuration file in the current directory.
 ```
 
-> [!WARNING]
-> Using the source command to create symlinks will overwrite any existing
-> Directory or File at the Source path where the symlink will be made
-
 ## Motivation
 
 I know that there are quite a few tools out there for managing dotfiles. Like
-all these utilities on [http://dotfiles.github.io/utilities/]. I know stow and
-chezmoi are famous choices for dotfiles management. But they have completely
+all these utilities on [http://dotfiles.github.io/utilities/]. Stow and
+Chezmoi are famous choices for dotfiles management. But they have completely
 different workflows and I never got used to stow with the packages of dotfiles.
 
 I manage my dotfiles with a simple bash script which just has `ln` command to
