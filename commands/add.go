@@ -83,8 +83,11 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 		sourcePath := source.AbsPath
 		destinationPath := destination.AbsPath
 
-		logger.VerboseLog(logger.SUCCESS, "Source path: %s", config.AliasPath(source.AbsPath, app.HomeDirectory, app.InitDirectory, true))
-		logger.VerboseLog(logger.SUCCESS, "Destination path: %s", config.AliasPath(destination.AbsPath, app.HomeDirectory, app.InitDirectory, true))
+		aliasSourcePath := config.AliasPath(source.AbsPath, app.HomeDirectory, app.InitDirectory, true)
+		aliasDestinationPath := config.AliasPath(destination.AbsPath, app.HomeDirectory, app.InitDirectory, true)
+
+		logger.VerboseLog(logger.SUCCESS, "Source path: %s", aliasSourcePath)
+		logger.VerboseLog(logger.SUCCESS, "Destination path: %s", aliasDestinationPath)
 
 		switch {
 		// Link Source File to inside of Destination directory
@@ -92,7 +95,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 			destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 
 		case isSourceFile && isDestinationFile:
-			return fmt.Errorf("Destination file %s already exists", destination.AbsPath)
+			return fmt.Errorf("Destination file %s already exists", aliasDestinationPath)
 
 		// Link Source file to Destination by using path as File or Directory based
 		// on trailling / provided with argument
@@ -111,7 +114,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 
 		// Can't link a Directory to a File
 		case isSourceDir && isDestinationFile:
-			return fmt.Errorf("Can't link a Directory: %s to a File: %s", source.AbsPath, destination.AbsPath)
+			return fmt.Errorf("Can't link a Directory: %s to a File: %s", aliasSourcePath, aliasDestinationPath)
 
 		// Link Source directory to Destination by using path as File or Directory
 		// based on trailling / provided with argument. But can't link a Directory
@@ -124,29 +127,20 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 				}
 				destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 			} else {
-				return fmt.Errorf("Can't link a Directory: %s to a File: %s", source.AbsPath, destination.AbsPath)
+				return fmt.Errorf("Can't link a Directory: %s to a File: %s", aliasSourcePath, aliasDestinationPath)
 			}
 
 		// Source Doesn't exists, But Destination does, and is a file and the Source
 		// can be a directory path or a file path
 		case !source.Exists && isDestinationFile:
-			if source.HasSlash {
-				// Given Source path has a trailing /, hence it's a directory
-				return fmt.Errorf("Can't Link a Directory %s to a File %s", source.AbsPath, destination.AbsPath)
-			} else {
-				// Source is a file which doesn't exist, Destination is a file
-				toMove = false
-			}
+			// Don't need the whole HasSlash check, symlink gets created correctly
+			// anyway, since the MoveAndLink does not get called, so it doesn't matter
+			// if Source path provided is of a directory or not
+			toMove = false
 
 		// Source Doesn't exists(Can be file or dir), But Destination does, and is a directory
 		case !source.Exists && isDestinationDir:
-			if source.HasSlash {
-				// Given Source path has a trailing /, hence it's a directory
-				toMove = false
-			} else {
-				// Else Source is a file, and destination is a directory
-				return fmt.Errorf("Can't link a File: %s to a Directory: %s", source.AbsPath, destination.AbsPath)
-			}
+			toMove = false
 
 		// Source and Destination Both Don't Exist
 		case !source.Exists && !destination.Exists:
