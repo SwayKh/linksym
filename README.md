@@ -11,6 +11,18 @@ single file using a simple command.
 - Automatically records symlinks in `.linksym.yaml` file
 - Allow you to recreate or restore symlinks from the configuration file
 
+### Workflow
+
+> - Make a dotfiles directory.
+> - Initialize linksym with `linksym init`.
+> - Add dotfiles to dotfiles directory with `linksym add`.
+> - Remove any unneeded dotfiles with `linksym remove`.
+> - Track changes with git.
+> - On another system or machine, Clone your dotfiles repo.
+> - Run `linksym update` to update the `.linksym.yaml` file.
+> - Run `linksym source` to create symlinks from the `.linksym.yaml` file.
+> - Profit.
+
 ## Installation
 
 Make sure you have `go` installed on your system.
@@ -128,21 +140,13 @@ all these utilities on [http://dotfiles.github.io/utilities/]. Stow and
 Chezmoi are famous choices for dotfiles management. But they have completely
 different workflows and I never got used to stow with the packages of dotfiles.
 
+There's also `mackup` which backups _ALL_ your dotfiles automatically to any
+file sharing/storing providers like dropbox or google-cloud. A bit overkill for
+my use case but be sure to have a look.
+
 I manage my dotfiles with a simple bash script which just has `ln` command to
 link each of my [dotfiles](https://github.com/swaykh/dotfiles). This project was
 made to ease that process and make it easier to manage symlinks.
-
-#### Workflow
-
-> - Make a dotfiles directory.
-> - Initialize linksym with `linksym init`.
-> - Add dotfiles to dotfiles directory with `linksym add`.
-> - Remove any unneeded dotfiles with `linksym remove`.
-> - Track changes with git.
-> - On another system or machine, Clone your dotfiles repo.
-> - Run `linksym update` to update the `.linksym.yaml` file.
-> - Run `linksym source` to create symlinks from the `.linksym.yaml` file.
-> - Profit.
 
 ## License
 
