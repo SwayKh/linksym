@@ -66,6 +66,9 @@ func (app *Application) Run() error {
 	case "remove":
 		err = app.Remove(args)
 
+	case "restore":
+		err = app.Restore(args)
+
 	case "record":
 		if len(args) > 2 {
 			return fmt.Errorf("'record' subcommand doesn't accept more than 2 arguments.\nUsage: linksym record <source> <destination (optional)>")
