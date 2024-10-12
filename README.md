@@ -20,7 +20,8 @@ single file using a simple command.
 > - Track changes with git.
 > - On another system or machine, Clone your dotfiles repo.
 > - Run `linksym update` to update the `.linksym.yaml` file.
-> - Run `linksym source` to create symlinks from the `.linksym.yaml` file.
+> - Run `linksym restore <dir/path>` to create it's symlink
+> - Run `linksym source` to create all symlinks from the `.linksym.yaml` file.
 > - Profit.
 
 ## Installation
@@ -50,6 +51,8 @@ database for storing record of symlinks. All other commands require for the
 `.linksym.yaml` file to be present and hence this command is required to be
 run before any other command.
 
+---
+
 ```
 linksym add [target] [destination (optional)]
 ```
@@ -64,6 +67,8 @@ pointing to destination. And records it in `.linksym.yaml`.
 > `linksym add [symlink location] [target path]` will create a symlink there
 > anyway.
 
+---
+
 ```
 linksym record [target] [destination (optional)]
 ```
@@ -72,12 +77,25 @@ Separate command to add a symlink record to `.linksym.yaml` file. Skips the
 Moving and symlinking step of the `add` subcommand. Useful for creating a record
 of symlink paths that are already present on the system.
 
+---
+
 ```
 linksym remove [target(s)...]
 ```
 
 Removes the symlink and restores the target file or directory to its original
 path and remove the record from `.linksym.yaml`.
+
+---
+
+```
+linksym restore [target(s)...]
+```
+
+Create a symlink for the specified target(s) at their source location based on
+the record in `.linksym.yaml`.
+
+---
 
 ```
 linksym update
@@ -86,6 +104,8 @@ linksym update
 Updates the `.linksym.yaml` file in the current directory. This updates the Init
 directory field in `.linksym.yaml` file with the current directory. and updates the
 `record name` fields appropriately.
+
+---
 
 ```
 linksym source
@@ -98,6 +118,8 @@ system or machine.
 > [!WARNING]
 > Using the source command to create symlinks will overwrite any existing
 > Directory or File at the Source path where the symlink will be made
+
+---
 
 #### Help
 
@@ -125,6 +147,9 @@ AVAILABLE COMMANDS:
 
   remove [target(s)...]
     Remove the symlink and restore the original file to its original path.
+
+  restore [target(s)...]
+    Create symlink for specified target(s) that has a record in .linksym.yaml configuration file.
 
   source
     Create all symlinks described in the .linksym.yaml configuration file.
