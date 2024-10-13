@@ -15,11 +15,11 @@ const (
 func VerboseLog(msgColor color.Attribute, msg string, args ...any) {
 	if *flags.VerboseFlag {
 		c := color.New(msgColor, color.Bold)
-		c.Printf(msg+"\n", args...)
+		c.Printf("   "+msg+"\n", args...)
 	}
 }
 
 func Log(msgColor color.Attribute, msg string, args ...any) {
 	c := color.New(msgColor, color.Bold)
-	c.Printf(msg+"\n", args...)
+	c.Printf("   "+msg+"\n", args...)
 }

@@ -48,7 +48,7 @@ func (c *AppConfig) RemoveRecord(name string) {
 		}
 	}
 
-	logger.Log(logger.INFO, "Removing record from .linksym.yaml...")
+	logger.Log(logger.SUCCESS, "Removing record from .linksym.yaml...")
 }
 
 func (c *AppConfig) AliasConfig(homeDir, initDir string) {

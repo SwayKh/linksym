@@ -26,13 +26,13 @@ single file using a simple command.
 
 ## Installation
 
-Make sure you have `go` installed on your system.
-
-Install it directly using `go`
+Make sure you have `go` installed on your system. Install it directly using `go`
 
 ```bash
 go install github.com/SwayKh/linksym@latest
 ```
+
+Or get the binary from the releases page. And put directly in your path
 
 Uninstall `linksym` by running:
 
