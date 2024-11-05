@@ -39,6 +39,19 @@ archives:
       - goos: windows
         format: zip
 
+nfpms:
+  - id: "linux"
+    package_name: "linksym"
+    section: "utils"
+    maintainer: "Sumit Khatri <khatrisumit712@gmail.com>"
+    description: "linksym is a utility to manage symlinks."
+    license: "MIT"
+    homepage: "https://github.com/SwayKh/linksym"
+    formats:
+      - "deb"
+      - "rpm"
+    contents:
+
 changelog:
   sort: asc
   filters:
