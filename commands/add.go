@@ -95,7 +95,12 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 			destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 
 		case isSourceFile && isDestinationFile:
-			return fmt.Errorf("destination file %s already exists", aliasDestinationPath)
+			toMove = true // Lets the MoveAndLink delete the source file and overwrite it.
+
+			// The Files should be overwritten, just like directories are, So this
+			// error shouldn't be returned, like 'ln' utility returns error when
+			// linking 2 files.
+			// return fmt.Errorf("destination file %s already exists", aliasDestinationPath)
 
 		// Link Source file to Destination by using path as File or Directory based
 		// on trailling / provided with argument
