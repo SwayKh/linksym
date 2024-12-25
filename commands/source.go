@@ -22,9 +22,11 @@ func (app *Application) Source() error {
 
 		pathArgs := []string{sourcePath, destinationPath}
 
+		// Don't stop the program wehn encountering a error when looping over
+		// records for source command. Move on to linking next records.
 		err = app.Add(pathArgs, true, false)
 		if err != nil {
-			return err
+			logger.Log(logger.ERROR, err.Error())
 		}
 	}
 	logger.Log(logger.SUCCESS, "Success")
