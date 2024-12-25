@@ -54,9 +54,15 @@ func (paths LinkPaths) MoveAndLink() error {
 
 // Create a symlink of source path at the destination path,
 func (paths LinkPaths) Link() error {
+	var err error
 	aliasDestinationPath := config.AliasPath(paths.DestinationPath, paths.HomeDir, paths.InitDir, true)
 
-	err := os.Symlink(paths.DestinationPath, paths.SourcePath)
+	err = os.MkdirAll(filepath.Dir(paths.SourcePath), 0o755)
+	if err != nil {
+		return fmt.Errorf("failed to create directory %s: %w", filepath.Dir(paths.SourcePath), err)
+	}
+
+	err = os.Symlink(paths.DestinationPath, paths.SourcePath)
 	if err != nil {
 		return fmt.Errorf("couldn't create symlink %s: %w", aliasDestinationPath, err)
 	}
