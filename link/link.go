@@ -35,7 +35,7 @@ func (paths LinkPaths) MoveAndLink() error {
 
 		err = os.Rename(paths.SourcePath, paths.DestinationPath)
 		if err != nil {
-			return fmt.Errorf("Couldn't link directory %s to %s: %w", aliasSourcePath, aliasDestinationPath, err)
+			return fmt.Errorf("couldn't link directory %s to %s: %w", aliasSourcePath, aliasDestinationPath, err)
 		}
 		logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
 	} else {
@@ -58,7 +58,7 @@ func (paths LinkPaths) Link() error {
 
 	err := os.Symlink(paths.DestinationPath, paths.SourcePath)
 	if err != nil {
-		return fmt.Errorf("Couldn't create symlink %s: %w", aliasDestinationPath, err)
+		return fmt.Errorf("couldn't create symlink %s: %w", aliasDestinationPath, err)
 	}
 
 	logger.Log(logger.SUCCESS, "Creating symlink...")
@@ -80,7 +80,7 @@ func (paths LinkPaths) UnLink() error {
 	if paths.IsDirectory {
 		err := os.Rename(paths.DestinationPath, paths.SourcePath)
 		if err != nil {
-			return fmt.Errorf("Couldn't move directory %s to %s: %w", aliasSourcePath, aliasDestinationPath, err)
+			return fmt.Errorf("couldn't move directory %s to %s: %w", aliasSourcePath, aliasDestinationPath, err)
 		}
 		logger.Log(logger.INFO, "Moving: %s to %s", aliasSourcePath, aliasDestinationPath)
 	} else {
@@ -103,24 +103,24 @@ func moveFile(source, destination, homeDir, initDir string) error {
 
 	src, err := os.Open(source)
 	if err != nil {
-		return fmt.Errorf("Failed to open file: %s: %w", source, err)
+		return fmt.Errorf("failed to open file: %s: %w", source, err)
 	}
 	defer src.Close()
 
 	err = os.MkdirAll(filepath.Dir(destination), 0o755)
 	if err != nil {
-		return fmt.Errorf("Failed to create directory %s: %w", filepath.Dir(destination), err)
+		return fmt.Errorf("failed to create directory %s: %w", filepath.Dir(destination), err)
 	}
 
 	dst, err := os.Create(destination)
 	if err != nil {
-		return fmt.Errorf("Failed to create file %s: %w", destination, err)
+		return fmt.Errorf("failed to create file %s: %w", destination, err)
 	}
 	defer dst.Close()
 
 	_, err = io.Copy(dst, src)
 	if err != nil {
-		return fmt.Errorf("Failed to copy file %s to %s: %w", source, destination, err)
+		return fmt.Errorf("failed to copy file %s to %s: %w", source, destination, err)
 	}
 
 	err = deleteFile(source)
@@ -144,9 +144,9 @@ func deleteFile(path string) error {
 	err = os.RemoveAll(path)
 	if err != nil {
 		if os.IsPermission(err) {
-			return fmt.Errorf("Failed to Remove file %s. Please run with elevated privileges", path)
+			return fmt.Errorf("failed to Remove file %s. Please run with elevated privileges", path)
 		} else {
-			return fmt.Errorf("Failed to Remove file: %w", err)
+			return fmt.Errorf("failed to Remove file: %w", err)
 		}
 	}
 	return nil

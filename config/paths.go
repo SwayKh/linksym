@@ -28,7 +28,7 @@ func GetFileInfo(path string) (fileInfo, error) {
 
 	info.AbsPath, err = filepath.Abs(path)
 	if err != nil {
-		return fileInfo{}, fmt.Errorf("Error getting absolute path of file %s: %w", path, err)
+		return fileInfo{}, fmt.Errorf("error getting absolute path of file %s: %w", path, err)
 	}
 
 	info.Info, err = os.Stat(info.AbsPath)
@@ -36,7 +36,7 @@ func GetFileInfo(path string) (fileInfo, error) {
 		if errors.Is(err, os.ErrNotExist) {
 			info.Exists = false
 		} else {
-			return fileInfo{}, fmt.Errorf("Error getting file info: %w", err)
+			return fileInfo{}, fmt.Errorf("error getting file info: %w", err)
 		}
 	}
 

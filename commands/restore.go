@@ -20,7 +20,7 @@ func (app *Application) Restore(args []string) error {
 		if err != nil {
 			return err
 		} else if !linkInfo.Exists {
-			return fmt.Errorf("File %s doesn't exist", linkInfo.AbsPath)
+			return fmt.Errorf("file %s doesn't exist", linkInfo.AbsPath)
 		}
 
 		fileName := filepath.Base(linkInfo.AbsPath)
@@ -37,7 +37,7 @@ func (app *Application) Restore(args []string) error {
 		}
 
 		if !found {
-			return fmt.Errorf("No record found for %s", config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true))
+			return fmt.Errorf("no record found for %s", config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true))
 		}
 
 		paths := link.LinkPaths{

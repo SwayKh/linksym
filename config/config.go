@@ -75,7 +75,7 @@ func (c *AppConfig) UnAliasConfig(homeDir, initDir string) {
 func InitialiseHomePath() (string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("Couldn't get the home directory")
+		return "", fmt.Errorf("couldn't get the home directory")
 	}
 	return homeDir, nil
 }

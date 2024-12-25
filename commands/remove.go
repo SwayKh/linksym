@@ -24,7 +24,7 @@ func (app *Application) Remove(args []string) error {
 		if err != nil {
 			return err
 		} else if !linkInfo.Exists {
-			return fmt.Errorf("File %s doesn't exist", linkInfo.AbsPath)
+			return fmt.Errorf("file %s doesn't exist", linkInfo.AbsPath)
 		}
 
 		logger.Log(logger.WARNING, "Unlinking %s", config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true))
@@ -47,7 +47,7 @@ func (app *Application) Remove(args []string) error {
 		}
 
 		if !found {
-			return fmt.Errorf("No record found for %s", config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true))
+			return fmt.Errorf("no record found for %s", config.AliasPath(linkInfo.AbsPath, app.HomeDirectory, app.InitDirectory, true))
 		}
 
 		paths := link.LinkPaths{

@@ -24,7 +24,7 @@ func (app *Application) Init() error {
 func initialiseConfig(configPath, homeDir string) error {
 	initDirectory, err := os.Getwd()
 	if err != nil {
-		return fmt.Errorf("Couldn't get the current working directory")
+		return fmt.Errorf("couldn't get the current working directory")
 	}
 
 	initDirectory = config.AliasPath(initDirectory, homeDir, initDirectory, true)
@@ -35,12 +35,12 @@ func initialiseConfig(configPath, homeDir string) error {
 	configuration.AliasConfig(homeDir, initDirectory)
 	data, err := yaml.Marshal(configuration)
 	if err != nil {
-		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
+		return fmt.Errorf("error marshalling data from configuration{}: %w", err)
 	}
 
 	err = os.WriteFile(configPath, data, 0o644)
 	if err != nil {
-		return fmt.Errorf("Error writing record to config file: %w", err)
+		return fmt.Errorf("error writing record to config file: %w", err)
 	}
 
 	logger.Log(logger.SUCCESS, "Initialising %s file in the current directory.", filepath.Base(configPath))

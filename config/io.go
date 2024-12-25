@@ -18,20 +18,20 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 
 	config, err := GetFileInfo(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting File Info of %s: %w", configPath, err)
+		return nil, fmt.Errorf("error getting File Info of %s: %w", configPath, err)
 	} else if !config.Exists {
-		return nil, fmt.Errorf("No .linksym.yaml file found. Please run linksym init.")
+		return nil, fmt.Errorf("no .linksym.yaml file found. Please run linksym init")
 	}
 
 	file, err := os.Open(config.AbsPath)
 	if err != nil {
-		return nil, fmt.Errorf("Error opening config file: %s ", filepath.Base(configPath))
+		return nil, fmt.Errorf("error opening config file: %s ", filepath.Base(configPath))
 	}
 	defer file.Close()
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return nil, fmt.Errorf("Error reading data from config file: %w", err)
+		return nil, fmt.Errorf("error reading data from config file: %w", err)
 	}
 
 	logger.VerboseLog(logger.INFO, "Getting data from config file...")
@@ -39,7 +39,7 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 
 	err = yaml.Unmarshal(data, &configuration)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting data from config file: %w", err)
+		return nil, fmt.Errorf("error getting data from config file: %w", err)
 	}
 
 	return configuration, nil
@@ -49,14 +49,14 @@ func LoadConfig(configPath string) (*AppConfig, error) {
 func (configuration *AppConfig) WriteConfig(homeDir, initDir, configPath string) error {
 	data, err := yaml.Marshal(configuration)
 	if err != nil {
-		return fmt.Errorf("Error marshalling data from configuration{}: %w", err)
+		return fmt.Errorf("error marshalling data from configuration{}: %w", err)
 	}
 
 	logger.VerboseLog(logger.SUCCESS, "Updating config file...")
 
 	err = os.WriteFile(configPath, data, 0o644)
 	if err != nil {
-		return fmt.Errorf("Error writing record to config file: %w", err)
+		return fmt.Errorf("error writing record to config file: %w", err)
 	}
 	return nil
 }
