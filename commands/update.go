@@ -20,7 +20,7 @@ func (app *Application) Update() error {
 
 	InitDirectory, err := os.Getwd()
 	if err != nil {
-		return fmt.Errorf("Couldn't get the current working directory")
+		return fmt.Errorf("couldn't get the current working directory")
 	}
 
 	app.InitDirectory = config.ExpandPath(InitDirectory, app.HomeDirectory, InitDirectory)

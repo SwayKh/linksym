@@ -88,7 +88,7 @@ func (app *Application) Run() error {
 		err = app.Update()
 
 	default:
-		err = fmt.Errorf("Invalid Command. Please use -h or --help flags to see available commands.")
+		err = fmt.Errorf("invalid Command. Please use -h or --help flags to see available commands")
 	}
 
 	if err != nil {

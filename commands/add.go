@@ -33,7 +33,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 		}
 
 		if !source.Exists {
-			return fmt.Errorf("File %s doesn't exist", source.AbsPath)
+			return fmt.Errorf("file %s doesn't exist", source.AbsPath)
 		}
 
 		logger.VerboseLog(logger.SUCCESS, "Source path exists: %s", config.AliasPath(source.AbsPath, app.HomeDirectory, app.InitDirectory, true))
@@ -95,7 +95,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 			destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 
 		case isSourceFile && isDestinationFile:
-			return fmt.Errorf("Destination file %s already exists", aliasDestinationPath)
+			return fmt.Errorf("destination file %s already exists", aliasDestinationPath)
 
 		// Link Source file to Destination by using path as File or Directory based
 		// on trailling / provided with argument
@@ -114,7 +114,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 
 		// Can't link a Directory to a File
 		case isSourceDir && isDestinationFile:
-			return fmt.Errorf("Can't link a Directory: %s to a File: %s", aliasSourcePath, aliasDestinationPath)
+			return fmt.Errorf("can't link a Directory: %s to a File: %s", aliasSourcePath, aliasDestinationPath)
 
 		// Link Source directory to Destination by using path as File or Directory
 		// based on trailling / provided with argument. But can't link a Directory
@@ -127,7 +127,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 				}
 				destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 			} else {
-				return fmt.Errorf("Can't link a Directory: %s to a File: %s", aliasSourcePath, aliasDestinationPath)
+				return fmt.Errorf("can't link a Directory: %s to a File: %s", aliasSourcePath, aliasDestinationPath)
 			}
 
 		// Source Doesn't exists, But Destination does, and is a file and the Source
@@ -144,10 +144,10 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 
 		// Source and Destination Both Don't Exist
 		case !source.Exists && !destination.Exists:
-			return fmt.Errorf("Source and Destination paths don't exist, Nothing to Link")
+			return fmt.Errorf("source and Destination paths don't exist, Nothing to Link")
 
 		default:
-			return fmt.Errorf("Invalid arguments provided")
+			return fmt.Errorf("invalid arguments provided")
 		}
 
 		paths := link.LinkPaths{
@@ -173,7 +173,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 		}
 
 	default:
-		return fmt.Errorf("Invalid number of arguments")
+		return fmt.Errorf("invalid number of arguments")
 	}
 	return nil
 }
