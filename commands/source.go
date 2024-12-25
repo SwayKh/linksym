@@ -13,9 +13,9 @@ func (app *Application) Source() error {
 	logger.VerboseLog(logger.INFO, "Creating Symlinks from .linksym.yaml Records...")
 	for _, record := range app.Configuration.Records {
 		sourcePath := record.Paths[0]
-		destinationPath := filepath.Dir(record.Paths[1])
+		destinationPath := record.Paths[1]
 
-		err := os.MkdirAll(destinationPath, 0o755)
+		err := os.MkdirAll(filepath.Dir(destinationPath), 0o755)
 		if err != nil {
 			return err
 		}
