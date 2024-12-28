@@ -44,6 +44,18 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 
 		logger.VerboseLog(logger.SUCCESS, "Destination path exists: %s", config.AliasPath(destinationPath, app.HomeDirectory, app.InitDirectory, true))
 
+		// Stop linking if the source path is already a symlink pointing towards the
+		// destination path
+		isLink, err := checkSymlink(sourcePath, destinationPath)
+		if err != nil {
+			return err
+		}
+
+		if isLink {
+			logger.Log(logger.WARNING, "Symlink already exists")
+			return nil
+		}
+
 		paths := link.LinkPaths{
 			SourcePath:      sourcePath,
 			DestinationPath: destinationPath,
@@ -155,6 +167,18 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 			return fmt.Errorf("invalid arguments provided")
 		}
 
+		// Stop linking if the source path is already a symlink pointing towards the
+		// destination path
+		isLink, err := checkSymlink(sourcePath, destinationPath)
+		if err != nil {
+			return err
+		}
+
+		if isLink {
+			logger.Log(logger.WARNING, "Symlink already exists")
+			return nil
+		}
+
 		paths := link.LinkPaths{
 			SourcePath:      sourcePath,
 			DestinationPath: destinationPath,
@@ -189,4 +213,25 @@ func appendToDestinationPath(sourcePath, destinationPath string) string {
 	destinationPath = filepath.Join(destinationPath, filename)
 
 	return destinationPath
+}
+
+func checkSymlink(src, dst string) (bool, error) {
+	srcIsLinkToDst := false
+	sourceLink, err := os.Lstat(src)
+	if err != nil {
+		return srcIsLinkToDst, fmt.Errorf("error reading symlink: %s", src)
+	}
+
+	// True for symlink
+	if sourceLink.Mode()&os.ModeSymlink != 0 {
+		link, err := os.Readlink(src)
+		if err != nil {
+			return srcIsLinkToDst, fmt.Errorf("error reading destination of link: %s", src)
+		}
+		if link == dst {
+			srcIsLinkToDst = true
+		}
+	}
+
+	return srcIsLinkToDst, nil
 }
