@@ -25,8 +25,7 @@ import (
 func (app *Application) Add(args []string, toLink bool, updateRecord bool) error {
 	toMove := true
 
-	switch len(args) {
-	case 1:
+	if len(args) == 1 {
 		source, err := config.GetFileInfo(args[0])
 		if err != nil {
 			return err
@@ -74,7 +73,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 			app.Configuration.AddRecord(sourcePath, destinationPath)
 		}
 
-	case 2:
+	} else if len(args) == 2 {
 		source, err := config.GetFileInfo(args[0])
 		if err != nil {
 			return err
@@ -107,7 +106,12 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 			destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 
 		case isSourceFile && isDestinationFile:
-			toMove = true // Lets the MoveAndLink delete the source file and overwrite it.
+			// call Link Function, which removes the sourceFile and creates and symlink
+			err = link.DeleteFile(sourcePath)
+			if err != nil {
+				return err
+			}
+			toMove = false
 
 			// The Files should be overwritten, just like directories are, So this
 			// error shouldn't be returned, like 'ln' utility returns error when
@@ -201,7 +205,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 			app.Configuration.AddRecord(sourcePath, destinationPath)
 		}
 
-	default:
+	} else {
 		return fmt.Errorf("invalid number of arguments")
 	}
 	return nil
@@ -217,6 +221,16 @@ func appendToDestinationPath(sourcePath, destinationPath string) string {
 
 func checkSymlink(src, dst string) (bool, error) {
 	srcIsLinkToDst := false
+
+	sourceData, err := config.GetFileInfo(src)
+	if err != nil {
+		return srcIsLinkToDst, err
+	}
+
+	if !sourceData.Exists {
+		return false, nil
+	}
+
 	sourceLink, err := os.Lstat(src)
 	if err != nil {
 		return srcIsLinkToDst, fmt.Errorf("error reading symlink: %s", src)
