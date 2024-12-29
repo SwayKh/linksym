@@ -28,7 +28,7 @@ func (paths LinkPaths) MoveAndLink() error {
 	// If path is a directory, Rename it
 	if paths.IsDirectory {
 		// Delete destination, if it exists
-		err = deleteFile(paths.DestinationPath)
+		err = DeleteFile(paths.DestinationPath)
 		if err != nil {
 			return err
 		}
@@ -57,6 +57,7 @@ func (paths LinkPaths) Link() error {
 	var err error
 	aliasDestinationPath := config.AliasPath(paths.DestinationPath, paths.HomeDir, paths.InitDir, true)
 
+	// Create paths for source path, if it doesn't exist
 	err = os.MkdirAll(filepath.Dir(paths.SourcePath), 0o755)
 	if err != nil {
 		return fmt.Errorf("failed to create directory %s: %w", filepath.Dir(paths.SourcePath), err)
@@ -78,7 +79,7 @@ func (paths LinkPaths) UnLink() error {
 	aliasDestinationPath := config.AliasPath(paths.DestinationPath, paths.HomeDir, paths.InitDir, true)
 
 	// Delete destination, if it exists
-	err := deleteFile(paths.SourcePath)
+	err := DeleteFile(paths.SourcePath)
 	if err != nil {
 		return err
 	}
@@ -129,7 +130,7 @@ func moveFile(source, destination, homeDir, initDir string) error {
 		return fmt.Errorf("failed to copy file %s to %s: %w", source, destination, err)
 	}
 
-	err = deleteFile(source)
+	err = DeleteFile(source)
 	if err != nil {
 		return err
 	}
@@ -137,7 +138,7 @@ func moveFile(source, destination, homeDir, initDir string) error {
 }
 
 // Delete the file at the given path
-func deleteFile(path string) error {
+func DeleteFile(path string) error {
 	file, err := config.GetFileInfo(path)
 	if err != nil {
 		return err
