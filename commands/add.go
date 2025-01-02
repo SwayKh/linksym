@@ -100,6 +100,18 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 		logger.VerboseLog(logger.SUCCESS, "Source path: %s", aliasSourcePath)
 		logger.VerboseLog(logger.SUCCESS, "Destination path: %s", aliasDestinationPath)
 
+		// Stop linking if the source path is already a symlink pointing towards the
+		// destination path
+		isLink, err := checkSymlink(sourcePath, destinationPath)
+		if err != nil {
+			return err
+		}
+
+		if isLink {
+			logger.Log(logger.WARNING, "Symlink already exists")
+			return nil
+		}
+
 		switch {
 		// Link Source File to inside of Destination directory
 		case isSourceFile && isDestinationDir:
@@ -169,18 +181,6 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 
 		default:
 			return fmt.Errorf("invalid arguments provided")
-		}
-
-		// Stop linking if the source path is already a symlink pointing towards the
-		// destination path
-		isLink, err := checkSymlink(sourcePath, destinationPath)
-		if err != nil {
-			return err
-		}
-
-		if isLink {
-			logger.Log(logger.WARNING, "Symlink already exists")
-			return nil
 		}
 
 		paths := link.LinkPaths{
