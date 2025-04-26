@@ -34,6 +34,13 @@ Make sure you have `go` installed on your system. Install it directly using `go`
 go install github.com/SwayKh/linksym@latest
 ```
 
+Or if you're on Arch Linux, there is an AUR package available for `linksym`
+```bash
+$ yay -S linksym
+or
+$ paru -S linksym
+```
+
 Or get the binary from the releases page. And put directly in your path
 
 Uninstall `linksym` by running:
