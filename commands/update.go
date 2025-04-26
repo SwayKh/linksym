@@ -41,7 +41,7 @@ func (app *Application) Update() error {
 	app.Configuration.AliasConfig(app.HomeDirectory, app.InitDirectory)
 	err = app.Configuration.WriteConfig(app.HomeDirectory, app.InitDirectory, app.ConfigPath)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil

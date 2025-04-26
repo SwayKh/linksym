@@ -73,7 +73,7 @@ func (app *Application) Run() error {
 		if len(args) > 2 {
 			return fmt.Errorf("'record' subcommand doesn't accept more than 2 arguments.\nUsage: linksym record <source> <destination (optional)>")
 		}
-		err = app.Add(args, false, true)
+		err = app.Record(args)
 
 	case "source":
 		if len(args) > 0 {
