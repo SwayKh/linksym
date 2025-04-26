@@ -1,25 +1,27 @@
 package logger
 
 import (
+	"fmt"
+
 	"github.com/SwayKh/linksym/flags"
-	"github.com/fatih/color"
 )
+
+type Attribute string
 
 const (
-	SUCCESS = color.FgGreen
-	INFO    = color.FgWhite
-	WARNING = color.FgYellow
-	ERROR   = color.FgRed
+	SUCCESS            Attribute = "\033[1;32m"
+	INFO               Attribute = "\033[1;97m"
+	WARNING            Attribute = "\033[1;33m"
+	ERROR              Attribute = "\033[1;31m"
+	BOLDUNDERLINEWHITE Attribute = "\003[1;4;37m"
 )
 
-func VerboseLog(msgColor color.Attribute, msg string, args ...any) {
+func VerboseLog(msgColor Attribute, msg string, args ...any) {
 	if *flags.VerboseFlag {
-		c := color.New(msgColor, color.Bold)
-		c.Printf("   "+msg+"\n", args...)
+		fmt.Printf(string(msgColor)+"   "+msg+"\n", args...)
 	}
 }
 
-func Log(msgColor color.Attribute, msg string, args ...any) {
-	c := color.New(msgColor, color.Bold)
-	c.Printf("   "+msg+"\n", args...)
+func Log(msgColor Attribute, msg string, args ...any) {
+	fmt.Printf(string(msgColor)+"   "+msg+"\n", args...)
 }
