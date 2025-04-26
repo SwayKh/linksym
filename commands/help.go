@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-var (
+const (
 	white              = "\033[97m"
 	boldWhite          = "\033[1;97m"
 	boldUnderlineWhite = "\033[1;4;97m"
