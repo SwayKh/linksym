@@ -10,6 +10,8 @@ single file using a simple command.
 - Allows easy creation of symlinks.
 - Automatically records symlinks in `.linksym.yaml` file
 - Allow you to recreate or restore symlinks from the configuration file
+- Follows the NO_COLOR protocol, export NO_COLOR=1(any value) to disable colored
+  output in logs
 
 ### Workflow
 
