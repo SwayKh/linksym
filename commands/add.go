@@ -118,12 +118,14 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 			destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
 
 		case isSourceFile && isDestinationFile:
-			// call Link Function, which removes the sourceFile and creates and symlink
-			err = link.DeleteFile(sourcePath)
+			// Backup the original source file, and create symlink in its place
+			// pointing to destinationPath
+			err = backupDirectory(sourcePath)
 			if err != nil {
 				return err
 			}
 			toMove = false
+			logger.Log(logger.WARNING, "Source and Destination paths match, creating backup of source")
 
 			// The Files should be overwritten, just like directories are, So this
 			// error shouldn't be returned, like 'ln' utility returns error when
@@ -143,7 +145,19 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 
 		// Link Source Directory to inside of Destination directory
 		case isSourceDir && isDestinationDir:
-			destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
+			// Backup the original source directory, and create symlink in its place
+			// pointing to destinationPath
+			if filepath.Base(sourcePath) == filepath.Base(destinationPath) {
+				err = backupDirectory(sourcePath)
+				if err != nil {
+					return err
+				}
+				toMove = false
+				logger.Log(logger.WARNING, "Source and Destination paths match, creating backup of source")
+			} else {
+				destinationPath = appendToDestinationPath(source.AbsPath, destination.AbsPath)
+				toMove = true
+			}
 
 		// Can't link a Directory to a File
 		case isSourceDir && isDestinationFile:
@@ -209,6 +223,10 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 		return fmt.Errorf("invalid number of arguments")
 	}
 	return nil
+}
+
+func backupDirectory(path string) error {
+	return os.Rename(path, path+".bak")
 }
 
 // Append filename from Source path to Destination path
