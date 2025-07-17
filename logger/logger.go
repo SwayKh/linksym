@@ -28,7 +28,7 @@ func VerboseLog(msgColor Attribute, msg string, args ...any) {
 		msgColor = RESET
 	}
 	if *flags.VerboseFlag {
-		fmt.Printf(string(msgColor)+"   "+msg+"\n", args...)
+		fmt.Printf(string(msgColor)+"   "+msg+string(RESET)+"\n", args...)
 	}
 }
 
@@ -36,5 +36,5 @@ func Log(msgColor Attribute, msg string, args ...any) {
 	if noColorIsSet {
 		msgColor = RESET
 	}
-	fmt.Printf(string(msgColor)+"   "+msg+"\n", args...)
+	fmt.Printf(string(msgColor)+"   "+msg+string(RESET)+"\n", args...)
 }

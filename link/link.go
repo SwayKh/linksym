@@ -68,7 +68,7 @@ func (paths LinkPaths) Link() error {
 		return fmt.Errorf("couldn't create symlink %s: %w", aliasDestinationPath, err)
 	}
 
-	logger.Log(logger.SUCCESS, "Creating symlink...")
+	logger.Log(logger.SUCCESS, "Creating symlink for %s", filepath.Base(aliasDestinationPath))
 	return nil
 }
 
