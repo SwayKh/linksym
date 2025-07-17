@@ -51,7 +51,7 @@ func (app *Application) Add(args []string, toLink bool, updateRecord bool) error
 		}
 
 		if isLink {
-			logger.Log(logger.WARNING, "Symlink already exists")
+			logger.Log(logger.WARNING, "Symlink already exists for %s", filepath.Base(destinationPath))
 			return nil
 		}
 
